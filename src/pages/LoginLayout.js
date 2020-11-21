@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+import { SERVICE_HOST } from '../configs/Host.config';
+
 class LoginLayout extends React.Component {
   state = {
     username: '',
@@ -20,13 +22,14 @@ class LoginLayout extends React.Component {
   login = async () => {
     const { username, password } = this.state;
     try {
-      let loginRequest = await axios.post('http://localhost:3000/user/login', { username, password });
+      let loginRequest = await axios.post(`http://${SERVICE_HOST}/user/login`, { username, password });
       let loggedUser = loginRequest.data.data;
       localStorage.setItem("user", JSON.stringify({ id: loggedUser.id, username: loggedUser.username }));
       window.location.href = "/";
     }
     catch(err) {
-      this.setState({ error: err.response.data.message });
+      if (err.response) this.setState({ error: err.response.data.message });
+      else this.setState({ error: 'Cannot conenct to server' });
     }
   }
 

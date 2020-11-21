@@ -2,6 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import { Modal, Button, Alert } from 'react-bootstrap';
 
+import { SERVICE_HOST } from '../configs/Host.config';
+
 class User extends React.Component {
     state = {
         currentUser: {
@@ -87,7 +89,7 @@ class ModalChangeUsername extends React.Component {
         }
 
         try {
-            const updateRequest = await axios.post('http://localhost:3000/user/updateUsername', params);
+            const updateRequest = await axios.post(`http://${SERVICE_HOST}/user/updateUsername`, params);
             localStorage.setItem('user', JSON.stringify(updateRequest.data.data));
             this.setState({ alertSuccess: true, alertError: false });
             this.props.onUpdate();
@@ -162,7 +164,7 @@ class ModalChangePassword extends React.Component {
         }
 
         try {
-            const updateRequests = await axios.post('http://localhost:3000/user/updatePassword', params);
+            const updateRequests = await axios.post(`http://${SERVICE_HOST}/user/updatePassword`, params);
             this.setState({ alertSuccess: true, alertError: "" });
         }
         catch(err) {
