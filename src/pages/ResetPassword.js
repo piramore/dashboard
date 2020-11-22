@@ -32,9 +32,9 @@ class ResetPassword extends React.Component {
         }
 
         try {
-            const updateRequest = await axios.post(`http://${SERVICE_HOST}/user/update_password`, params);
+            const updateRequest = await axios.post(`http://${SERVICE_HOST}/user/reset_password`, params);
             this.setState({
-                alertSuccess: updateRequest.data.data.message,
+                alertSuccess: updateRequest.data.message,
                 alertError: ''
             });
         }
@@ -88,7 +88,8 @@ class ResetPassword extends React.Component {
                                 </Alert>
                                 <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })} dismissible>
                                     <Alert.Heading>Success!</Alert.Heading>
-                                    { this.state.alertError }
+                                    <p>{ this.state.alertError }</p>
+                                    <a href="/">Back to home</a>
                                 </Alert>
                             </div>
                         </>

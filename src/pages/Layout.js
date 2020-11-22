@@ -33,7 +33,6 @@ function Layout() {
         <div className="container">
           <Switch>
             <Route path="/user" component={User}/>
-            <Route path="/reset_password/:token" component={ResetPassword}/>
             <Route path="/" component={Home}/>
           </Switch>
         </div>

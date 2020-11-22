@@ -145,62 +145,81 @@ class ModalChangePassword extends React.Component {
     }
 
     state = {
-        alertSuccess: false,
-        alertError: ''
+        password: '',
+        newPassword: '',
+        reNewPassword: '',
+        alertError: '',
+        alertSuccess: ''
     }
-    
+
+    handlerPassword = e => this.setState({ password: e.target.value });
+    handlerNewPassword = e => this.setState({ newPassword: e.target.value });
+    handlerReNewPassword = e => this.setState({ reNewPassword: e.target.value });
     changePassword = async () => {
-        const currentUser = JSON.parse(localStorage.getItem("user"));
+        if (this.state.newPassword !== this.state.reNewPassword) {
+            this.setState({ alertError: "New password mismatch" });
+            return;
+        }
+
+        const loggedUser = JSON.parse(localStorage.getItem("user"));
+
         const params = {
-            username: currentUser.username,
+            username: loggedUser.username,
+            password: this.state.password,
+            new_password: this.state.newPassword
         }
 
         try {
-            const updateRequests = await axios.post(`http://${SERVICE_HOST}/user/password_token_request`, params);
-            this.setState({ alertSuccess: true, alertError: "" });
+            await axios.post(`http://${SERVICE_HOST}/user/update_password`, params);
+            this.setState({ alertSuccess: "Success updating password!" });
         }
+
         catch(err) {
-            console.log(err.response);
             this.setState({
-                alertError: err.response ? err.response.data.data.message : "Failed updating password!",
-                alertSuccess: false
+                alertError: err.response ? err.response.data.message : "Failed updating password!"
             });
-            console.log(err);
         }
     }
 
     render() {
         return (
             <>
-                <Modal.Header closeButton>
-                    <Modal.Title>Change Password</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="mb-4">
-                        Are you sure want to reset your password?
-                    </div>
-                    <Alert show={this.state.alertSuccess} variant="success" onClose={() => this.setState({ alertSuccess: false })} dismissible>
-                        <Alert.Heading>Success!</Alert.Heading>
-                        Password reset link has been sent to your email!
-                    </Alert>
-                    <Alert show={this.state.alertError != ''} variant="danger" onClose={() => this.setState({ alertError: false })} dismissible>
-                        <Alert.Heading>Error!</Alert.Heading>
-                        { this.state.alertError }
-                    </Alert>
-                </Modal.Body>
-                <Modal.Footer>
-                    {
-                        !this.state.alertSuccess &&
-                        <>
-                            <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
-                            <Button variant="primary" onClick={() => this.changePassword()}>Yes</Button>
-                        </>
-                    }
-                    {
-                        this.state.alertSuccess &&
-                        <Button variant="primary" onClick={() => this.props.onClose()}>Close</Button>
-                    }
-                </Modal.Footer>
+            <Modal.Header closeButton>
+                <Modal.Title>Change Password</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div className="form-group">
+                    <input type="password" className="form-control" placeholder="Password" onChange={this.handlerPassword}/>
+                </div>
+                <div className="form-group">
+                    <input type="password" className="form-control" placeholder="New Password" onChange={this.handlerNewPassword}/>
+                </div>
+                <div className="form-group">
+                    <input type="password" className="form-control" placeholder="Confirm Password" onChange={this.handlerReNewPassword}/>
+                </div>
+
+                <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })}>
+                    <Alert.Heading>Success!</Alert.Heading>
+                    { this.state.alertSuccess }
+                </Alert>
+                <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })} dismissible>
+                    <Alert.Heading>Error!</Alert.Heading>
+                    { this.state.alertError }
+                </Alert>
+            </Modal.Body>
+            <Modal.Footer>
+                {
+                    this.state.alertSuccess === ''  &&
+                    <>
+                        <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
+                        <Button variant="primary" onClick={() => this.changePassword()}>Submit</Button>
+                    </>
+                }
+                {
+                    this.state.alertSuccess !== '' &&
+                    <Button variant="primary" onClick={() => this.props.onClose()}>Close</Button>
+                }
+            </Modal.Footer>
             </>
         )
     }
