@@ -24,7 +24,7 @@ class LoginLayout extends React.Component {
     try {
       let loginRequest = await axios.post(`http://${SERVICE_HOST}/user/login`, { username, password });
       let loggedUser = loginRequest.data.data;
-      localStorage.setItem("user", JSON.stringify({ id: loggedUser.id, username: loggedUser.username }));
+      localStorage.setItem("user", JSON.stringify({ username: loggedUser.username, email: loggedUser.email }));
       window.location.href = "/";
     }
     catch(err) {

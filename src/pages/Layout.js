@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
+import ResetPassword from './ResetPassword';
 import User from './User';
 
 function Layout() {
@@ -32,6 +33,7 @@ function Layout() {
         <div className="container">
           <Switch>
             <Route path="/user" component={User}/>
+            <Route path="/reset_password/:token" component={ResetPassword}/>
             <Route path="/" component={Home}/>
           </Switch>
         </div>

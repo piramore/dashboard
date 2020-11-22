@@ -89,8 +89,14 @@ class ModalChangeUsername extends React.Component {
         }
 
         try {
-            const updateRequest = await axios.post(`http://${SERVICE_HOST}/user/updateUsername`, params);
-            localStorage.setItem('user', JSON.stringify(updateRequest.data.data));
+            const updateRequest = await axios.post(`http://${SERVICE_HOST}/user/update_username`, params);
+
+            const updatedUser = updateRequest.data.data;
+            localStorage.setItem('user', JSON.stringify({
+                username: updatedUser.username,
+                email: updatedUser.email
+            }));
+
             this.setState({ alertSuccess: true, alertError: false });
             this.props.onUpdate();
         }
@@ -115,7 +121,7 @@ class ModalChangeUsername extends React.Component {
                         <label htmlFor="password">Password</label>
                         <input className="form-control" type="password" name="password" placeholder="Password" onChange={this.handlePassword}/>
                     </div>
-                    <Alert show={this.state.alertSuccess} variant="success" onClose={() => this.setState({ alertSuccess: false })} dismissible>
+                    <Alert show={this.state.alertSuccess} variant="success" onClose={() => this.setState({ alertSuccess: false })}>
                         <Alert.Heading>Success!</Alert.Heading>
                         Success updating username!
                     </Alert>
@@ -139,36 +145,26 @@ class ModalChangePassword extends React.Component {
     }
 
     state = {
-        password: '',
-        newPassword: '',
-        newPasswordConfirm: '',
         alertSuccess: false,
         alertError: ''
     }
-
-    handlePassword = (e) => this.setState({ password: e.target.value });
-    handleNewPassword = (e) => this.setState({ newPassword: e.target.value });
-    handleNewPasswordConfirm = (e) => this.setState({ newPasswordConfirm: e.target.value });
     
     changePassword = async () => {
-        if (this.state.newPassword != this.state.newPasswordConfirm) {
-            this.setState({ alertError: 'New password mismatch!' });
-            return;
-        }
-
         const currentUser = JSON.parse(localStorage.getItem("user"));
         const params = {
             username: currentUser.username,
-            password: this.state.password,
-            new_password: this.state.newPassword,
         }
 
         try {
-            const updateRequests = await axios.post(`http://${SERVICE_HOST}/user/updatePassword`, params);
+            const updateRequests = await axios.post(`http://${SERVICE_HOST}/user/password_token_request`, params);
             this.setState({ alertSuccess: true, alertError: "" });
         }
         catch(err) {
-            this.setState({ alertError: "Failed updating password!", alertSuccess: false });
+            console.log(err.response);
+            this.setState({
+                alertError: err.response ? err.response.data.data.message : "Failed updating password!",
+                alertSuccess: false
+            });
             console.log(err);
         }
     }
@@ -180,21 +176,12 @@ class ModalChangePassword extends React.Component {
                     <Modal.Title>Change Password</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className="form-group">
-                        <label htmlFor="password">Current Password</label>
-                        <input type="password" className="form-control" name="password" placeholder="Current Password" onChange={this.handlePassword}/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="new-password">New Password</label>
-                        <input type="password" className="form-control" name="new-password" placeholder="New Password" onChange={this.handleNewPassword}/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="new-password-confirm">Confirm New Password</label>
-                        <input type="password" className="form-control" name="new-password-confirm" placeholder="Confirm New Password" onChange={this.handleNewPasswordConfirm}/>
+                    <div className="mb-4">
+                        Are you sure want to reset your password?
                     </div>
                     <Alert show={this.state.alertSuccess} variant="success" onClose={() => this.setState({ alertSuccess: false })} dismissible>
                         <Alert.Heading>Success!</Alert.Heading>
-                        Success updating password!
+                        Password reset link has been sent to your email!
                     </Alert>
                     <Alert show={this.state.alertError != ''} variant="danger" onClose={() => this.setState({ alertError: false })} dismissible>
                         <Alert.Heading>Error!</Alert.Heading>
@@ -202,8 +189,17 @@ class ModalChangePassword extends React.Component {
                     </Alert>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
-                    <Button variant="primary" onClick={() => this.changePassword()}>Save</Button>
+                    {
+                        !this.state.alertSuccess &&
+                        <>
+                            <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
+                            <Button variant="primary" onClick={() => this.changePassword()}>Yes</Button>
+                        </>
+                    }
+                    {
+                        this.state.alertSuccess &&
+                        <Button variant="primary" onClick={() => this.props.onClose()}>Close</Button>
+                    }
                 </Modal.Footer>
             </>
         )
