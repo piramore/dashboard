@@ -3,8 +3,10 @@ import React from 'react';
 class Home extends React.Component {
   state = {
     currentUser: {
-      username: '',
-      id: 0
+      _id: '',
+      name: '',
+      email: '',
+      role: ''
     }
   }
 
@@ -17,7 +19,7 @@ class Home extends React.Component {
     return (
       <>
         <div style={{ fontSize: '3rem', textAlign: 'center', marginTop: '100px' }}>
-          Hello, <span style={{ fontWeight: 'bold' }}>{ this.state.currentUser.username }</span>!
+          Hello, <span style={{ fontWeight: 'bold' }}>{ this.state.currentUser.name }</span>!
         </div>
       </>
     )

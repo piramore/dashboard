@@ -7,14 +7,15 @@ import { SERVICE_HOST } from '../configs/Host.config';
 class LoginLayout extends React.Component {
   state = {
     username: '',
+    email: '',
     password: '',
     error: '',
     loginSuccess: false,
     resetPasswordModal: false
   }
 
-  handleUsernameChange = (event) => {
-    this.setState({ username: event.target.value });
+  handleEmailChange = (event) => {
+    this.setState({ email: event.target.value });
   }
 
   handlePasswordChange = (event) => {
@@ -22,15 +23,21 @@ class LoginLayout extends React.Component {
   }
 
   login = async () => {
-    const { username, password } = this.state;
+    const { email, password } = this.state;
     try {
-      let loginRequest = await axios.post(`http://${SERVICE_HOST}/user/login`, { username, password });
-      let loggedUser = loginRequest.data.data;
-      localStorage.setItem("user", JSON.stringify({ username: loggedUser.username, email: loggedUser.email }));
+      let loginRequest = await axios.post(`/api/login`, { email, password }, );
+
+      if (loginRequest.data.success == "false") throw loginRequest.data.message;
+
+      let loggedUser = loginRequest.data.admin;
+
+      localStorage.setItem("user", JSON.stringify(loggedUser));
+      localStorage.setItem("token", loginRequest.data.token);
       window.location.href = "/";
     }
     catch(err) {
       if (err.response) this.setState({ error: err.response.data.message });
+      else if (typeof err == 'string') this.setState({ error: err });
       else this.setState({ error: 'Cannot conenct to server' });
     }
   }
@@ -51,7 +58,7 @@ class LoginLayout extends React.Component {
           <div className="card-body">
             <div className="font-weight-bold mb-4" style={{ fontSize: '1.5rem' }}>Login</div>
             <div className="form-group">
-              <input className="form-control" type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsernameChange}/>
+              <input className="form-control" type="text" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}/>
             </div>
             <div className="form-group">
               <input className="form-control" type="password" placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}/>

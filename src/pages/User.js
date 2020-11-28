@@ -7,8 +7,10 @@ import { SERVICE_HOST } from '../configs/Host.config';
 class User extends React.Component {
     state = {
         currentUser: {
-            username: '',
-            id: 0
+            _id: '',
+            name: '',
+            email: '',
+            role: ''
         },
         error: '',
         modalUsername: false,
