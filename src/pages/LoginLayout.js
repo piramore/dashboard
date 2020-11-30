@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Alert, Modal, Button } from 'react-bootstrap';
+import { Alert, Modal, Button, Spinner } from 'react-bootstrap';
 
 import { SERVICE_HOST } from '../configs/Host.config';
 
@@ -88,9 +88,10 @@ class ModalResetPassword extends React.Component {
   }
 
   state = {
-      alertSuccess: false,
+      alertSuccess: '',
       alertError: '',
-      email: ''
+      email: '',
+      loading: false
   }
 
   handleEmail = (e) => this.setState({ email: e.target.value });
@@ -101,16 +102,25 @@ class ModalResetPassword extends React.Component {
       }
 
       try {
-          await axios.post(`http://${SERVICE_HOST}/user/password_token_request`, params);
-          this.setState({ alertSuccess: true, alertError: "" });
+        this.setState({ loading: true });
+        const updateReq = await axios.post(`/api/forgotpassword`, params);
+        this.setState({ loading: false });
+        if (updateReq.data.success) {
+          this.setState({ alertSuccess: updateReq.data.message, alertError: "" });
+        } else {
+          this.setState({ alertSuccess: '', alertError: updateReq.data.message });
+        }
       }
 
       catch(err) {
-          this.setState({
-              alertError: err.response ? err.response.data.message : "Failed requesting password reset!",
-              alertSuccess: false
-          });
-          console.log(err);
+        this.setState({ loading: false });
+        let message;
+        if (err.response) message = err.response.data.message;
+        this.setState({
+            alertError: message || "Failed requesting password reset!",
+            alertSuccess: ''
+        });
+        console.log(err);
       }
   }
 
@@ -127,9 +137,9 @@ class ModalResetPassword extends React.Component {
                       <input type="email" className="form-control" placeholder="example@seblak.moe" onChange={this.handleEmail}/>
                     </div>
                   </div>
-                  <Alert show={this.state.alertSuccess} variant="success" onClose={() => this.setState({ alertSuccess: false })}>
+                  <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: false })}>
                       <Alert.Heading>Success!</Alert.Heading>
-                      Password reset link has been sent to your email!
+                      { this.state.alertSuccess }
                   </Alert>
                   <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: false })} dismissible>
                       <Alert.Heading>Error!</Alert.Heading>
@@ -141,7 +151,12 @@ class ModalResetPassword extends React.Component {
                       !this.state.alertSuccess &&
                       <>
                           <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
-                          <Button variant="primary" onClick={() => this.resetPassword()}>Reset</Button>
+                          <Button variant="primary" onClick={() => this.resetPassword()}>
+                            { this.state.loading ? 
+                              <Spinner animation='border' as="span" role="status" size="sm" /> :
+                              <span>Reset</span>
+                            }
+                          </Button>
                       </>
                   }
                   {
