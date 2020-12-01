@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Alert, Button } from 'react-bootstrap';
+import { Alert, Button, Spinner } from 'react-bootstrap';
 
 import { SERVICE_HOST } from '../configs/Host.config';
 
@@ -15,7 +15,8 @@ class ResetPassword extends React.Component {
         passwordRe: '',
         alertError: '',
         alertSuccess: '',
-        tokenInvalid: false
+        loading: false,
+        emailSent: false
     }
 
     handlePassword = (e) => this.setState({ password: e.target.value });
@@ -26,23 +27,35 @@ class ResetPassword extends React.Component {
             return;
         }
         
+        const token = this.state.token;
         const params = {
-            password: this.state.password,
-            token: this.state.token
+            password: this.state.password
         }
 
         try {
-            const updateRequest = await axios.post(`http://${SERVICE_HOST}/user/reset_password`, params);
-            this.setState({
-                alertSuccess: updateRequest.data.message,
-                alertError: ''
-            });
+            this.setState({ loading: true });
+            const response = await axios.post(`/api/resetpassword/${token}`, params);
+            this.setState({ loading: false });
+
+            if (response.data.success) {
+                this.setState({
+                    alertSuccess: response.data.message,
+                    alertError: ''
+                });
+            } else {
+                this.setState({
+                    alertSuccess: '',
+                    alertError: response.data.message
+                });
+            }
         }
 
         catch(err) {
-            console.log(err.response);
+            this.setState({ loading: false });
+            let message;
+            if (err.response) message = err.response.data.message;
             this.setState({
-                alertError: err.response ? err.response.data.message : 'Failed to update password',
+                alertError: message || 'Failed to update password',
                 alertSuccess: ''
             });
         }
@@ -50,14 +63,7 @@ class ResetPassword extends React.Component {
 
     async componentDidMount() {
         const token = this.props.match.params.token;
-        try {
-            await axios.post(`http://${SERVICE_HOST}/user/check_token`, { token });
-            this.setState({ token });
-        }
-
-        catch(err) {
-            this.setState({ tokenInvalid: true });
-        }
+        this.setState({ token });
     }
 
     render() {
@@ -65,35 +71,29 @@ class ResetPassword extends React.Component {
             <div className="container">
                 <h1>Reset Password</h1>
                 <div style={{ width: 500, margin: "50px auto 0px auto" }}>
-                    <Alert show={this.state.tokenInvalid} variant="danger">
-                        <Alert.Heading>Error!</Alert.Heading>
-                        Token is invalid or expired!
-                    </Alert>
-                    {
-                        !this.state.tokenInvalid &&
-                        <>
-                            <div className="form-group">
-                                <input type="password" className="form-control" name="password" placeholder="New Password" onChange={this.handlePassword}/>
-                            </div>
-                            <div className="form-group">
-                                <input type="password" className="form-control" name="passwordRe" placeholder="Confirm New Password" onChange={this.handlePasswordRe}/>
-                            </div>
-                            <Button variant="primary" block onClick={() => this.changePassword()}>
-                                Submit
-                            </Button>
-                            <div className="mt-4">
-                                <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })} dismissible>
-                                    <Alert.Heading>Error!</Alert.Heading>
-                                    { this.state.alertError }
-                                </Alert>
-                                <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })} dismissible>
-                                    <Alert.Heading>Success!</Alert.Heading>
-                                    <p>{ this.state.alertError }</p>
-                                    <a href="/">Back to home</a>
-                                </Alert>
-                            </div>
-                        </>
-                    }
+                    <div className="form-group">
+                        <input type="password" className="form-control" name="password" placeholder="New Password" onChange={this.handlePassword}/>
+                    </div>
+                    <div className="form-group">
+                        <input type="password" className="form-control" name="passwordRe" placeholder="Confirm New Password" onChange={this.handlePasswordRe}/>
+                    </div>
+                    <Button variant="primary" block onClick={() => this.changePassword()}>
+                        { this.state.loading ?
+                            <Spinner animation='border' as='span' size="sm"/> :
+                            <span>Submit</span>
+                        }
+                    </Button>
+                    <div className="mt-4">
+                        <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })} dismissible>
+                            <Alert.Heading>Error!</Alert.Heading>
+                            { this.state.alertError }
+                        </Alert>
+                        <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })} dismissible>
+                            <Alert.Heading>Success!</Alert.Heading>
+                            <p>{ this.state.alertError }</p>
+                            <a href="/">Back to home</a>
+                        </Alert>
+                    </div>
                 </div>
             </div>
         )

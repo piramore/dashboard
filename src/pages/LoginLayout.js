@@ -91,12 +91,20 @@ class ModalResetPassword extends React.Component {
       alertSuccess: '',
       alertError: '',
       email: '',
-      loading: false
+      token: '',
+      newPassword: '',
+      reNewPassword: '',
+      loading: false,
+      emailSent: false,
+      mailSentMessage: '',
   }
 
   handleEmail = (e) => this.setState({ email: e.target.value });
+  handlerPassword = (e) => this.setState({ newPassword: e.target.value });
+  handlerRePassword = (e) => this.setState({ reNewPassword: e.target.value });
+  handlerToken = (e) => this.setState({ token: e.target.value });
   
-  resetPassword = async () => {
+  sentMail = async () => {
       const params = {
         email: this.state.email
       }
@@ -106,7 +114,11 @@ class ModalResetPassword extends React.Component {
         const updateReq = await axios.post(`/api/forgotpassword`, params);
         this.setState({ loading: false });
         if (updateReq.data.success) {
-          this.setState({ alertSuccess: updateReq.data.message, alertError: "" });
+          this.setState({
+            alertError: "",
+            mailSentMessage: updateReq.data.message,
+            emailSent: true
+          });
         } else {
           this.setState({ alertSuccess: '', alertError: updateReq.data.message });
         }
@@ -124,6 +136,34 @@ class ModalResetPassword extends React.Component {
       }
   }
 
+  resetPassword = async () => {
+    if (this.state.newPassword !== this.state.reNewPassword) {
+      console.log(this.state);
+      this.setState({ alertError: 'Password missmatch!', alertSuccess: '' });
+      return;
+    }
+
+    const params = {
+      newPassword: this.state.newPassword
+    }
+
+    try {
+      this.setState({ loading: true });
+      let response = await axios.post(`/api/resetpassword/${this.state.token}`, params);
+      this.setState({ loading: false });
+      if (response.data.success) {
+        this.setState({ alertSuccess: response.data.message, alertError: '' });
+      } else {
+        this.setState({ alertError: response.data.message, alertSuccess: '' });
+      }
+    } catch(err) {
+      this.setState({ loading: false });
+      let message;
+      if (err.response) message = err.response.data.message;
+      this.setState({ alertError: message || 'Failed update password', alertSuccess: '' });
+    }
+  }
+
   render() {
       return (
           <>
@@ -131,30 +171,89 @@ class ModalResetPassword extends React.Component {
                   <Modal.Title>Reset Password</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                  <div className="mb-4">
-                    <p>Please input your email to reset your password.</p>
-                    <div className="form-group">
-                      <input type="email" className="form-control" placeholder="example@seblak.moe" onChange={this.handleEmail}/>
+                { !this.state.emailSent ?
+                  <>
+                    <div className="mb-4">
+                      <p>Please input your email to reset your password.</p>
+                      <div className="form-group">
+                        <input
+                          type="email"
+                          className="form-control"
+                          id="email"
+                          name="email"
+                          key="email"
+                          placeholder="example@seblak.moe"
+                          onChange={this.handleEmail}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: false })}>
-                      <Alert.Heading>Success!</Alert.Heading>
-                      { this.state.alertSuccess }
-                  </Alert>
-                  <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: false })} dismissible>
-                      <Alert.Heading>Error!</Alert.Heading>
-                      { this.state.alertError }
-                  </Alert>
+                  </> :
+                  <>
+                    <div className="mb-4">
+                      <p>{ this.state.mailSentMessage }</p>
+                      <div className="form-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="token"
+                          name="token"
+                          key="token"
+                          placeholder="Token"
+                          onChange={this.handlerToken}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="new_password"
+                          name="new_password"
+                          key="new_password"
+                          placeholder="New Password"
+                          onChange={this.handlerPassword}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="re_new_password"
+                          name="re_new_password"
+                          key="re_new_password"
+                          placeholder="Confirm New Password"
+                          onChange={this.handlerRePassword}
+                        />
+                      </div>
+                    </div>
+                    <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })}>
+                        <Alert.Heading>Success!</Alert.Heading>
+                        { this.state.alertSuccess }
+                    </Alert>
+                  </>
+                }
+                <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })} dismissible>
+                    <Alert.Heading>Error!</Alert.Heading>
+                    { this.state.alertError }
+                </Alert>
               </Modal.Body>
-              <Modal.Footer>
+              <Modal.Footer style={{ justifyContent: 'space-between' }}>
+                <div>
+                  { !this.state.emailSent &&
+                    <span className="text-primary" style={{ cursor: 'pointer' }}
+                      onClick={() => this.setState({ emailSent: true })}>
+                      Already have token?
+                    </span>
+                  }
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
                   {
-                      !this.state.alertSuccess &&
+                      this.state.alertSuccess === '' &&
                       <>
                           <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
-                          <Button variant="primary" onClick={() => this.resetPassword()}>
+                          <Button variant="primary" disabled={this.loading} onClick={() => this.state.emailSent ? this.resetPassword() : this.sentMail()}>
                             { this.state.loading ? 
                               <Spinner animation='border' as="span" role="status" size="sm" /> :
-                              <span>Reset</span>
+                              <span>Submit</span>
                             }
                           </Button>
                       </>
@@ -163,6 +262,7 @@ class ModalResetPassword extends React.Component {
                       this.state.alertSuccess &&
                       <Button variant="primary" onClick={() => this.props.onClose()}>Close</Button>
                   }
+                </div>
               </Modal.Footer>
           </>
       )
