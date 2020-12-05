@@ -116,8 +116,8 @@ class ModalResetPassword extends React.Component {
         if (updateReq.data.success) {
           this.setState({
             alertError: "",
-            mailSentMessage: updateReq.data.message,
-            emailSent: true
+            alertSuccess: updateReq.data.message,
+            // emailSent: true
           });
         } else {
           this.setState({ alertSuccess: '', alertError: updateReq.data.message });
@@ -225,12 +225,12 @@ class ModalResetPassword extends React.Component {
                         />
                       </div>
                     </div>
-                    <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })}>
-                        <Alert.Heading>Success!</Alert.Heading>
-                        { this.state.alertSuccess }
-                    </Alert>
                   </>
                 }
+                <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })}>
+                    <Alert.Heading>Success!</Alert.Heading>
+                    { this.state.alertSuccess }
+                </Alert>
                 <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })} dismissible>
                     <Alert.Heading>Error!</Alert.Heading>
                     { this.state.alertError }
@@ -238,7 +238,7 @@ class ModalResetPassword extends React.Component {
               </Modal.Body>
               <Modal.Footer style={{ justifyContent: 'space-between' }}>
                 <div>
-                  { !this.state.emailSent &&
+                  { false &&
                     <span className="text-primary" style={{ cursor: 'pointer' }}
                       onClick={() => this.setState({ emailSent: true })}>
                       Already have token?

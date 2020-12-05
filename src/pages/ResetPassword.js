@@ -21,7 +21,7 @@ class ResetPassword extends React.Component {
 
     handlePassword = (e) => this.setState({ password: e.target.value });
     handlePasswordRe = (e) => this.setState({ passwordRe: e.target.value });
-    changePassword = async () => {
+    resetPassword = async () => {
         if (this.state.password !== this.state.passwordRe) {
             this.setState({ alertError: 'Password mismatch.' });
             return;
@@ -77,7 +77,7 @@ class ResetPassword extends React.Component {
                     <div className="form-group">
                         <input type="password" className="form-control" name="passwordRe" placeholder="Confirm New Password" onChange={this.handlePasswordRe}/>
                     </div>
-                    <Button variant="primary" block onClick={() => this.changePassword()}>
+                    <Button variant="primary" block onClick={() => this.resetPassword()}>
                         { this.state.loading ?
                             <Spinner animation='border' as='span' size="sm"/> :
                             <span>Submit</span>

@@ -13,7 +13,7 @@ function App() {
     <Router>
       <Switch>
         <Route path="/login" component={LoginLayout}/>
-        <Route path="/reset_password/:token" component={ResetPassword}/>
+        <Route path="/resetpassword/:token" component={ResetPassword}/>
         <Route path="/">
           { currentUser ? <Layout/> : <Redirect to="/login"/> }
         </Route>
