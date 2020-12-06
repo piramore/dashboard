@@ -165,20 +165,30 @@ class ModalChangePassword extends React.Component {
 
         const loggedUser = JSON.parse(localStorage.getItem("user"));
 
+        // old parameters
+        // const params = {
+        //     username: loggedUser.username,
+        //     password: this.state.password,
+        //     new_password: this.state.newPassword
+        // }
+
         const params = {
-            username: loggedUser.username,
-            password: this.state.password,
-            new_password: this.state.newPassword
-        }
+            password: this.state.newPassword
+        };
+        
+
+        const header = { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
 
         try {
-            await axios.post(`http://${SERVICE_HOST}/user/update_password`, params);
-            this.setState({ alertSuccess: "Success updating password!" });
+            let res = await axios.post(`/api/admin/update`, params, { headers: header });
+            this.setState({ alertSuccess: "Update password success" });
         }
 
         catch(err) {
+            let message;
+            if (err.response) message = err.response.message;
             this.setState({
-                alertError: err.response ? err.response.data.message : "Failed updating password!"
+                alertError: message || "Failed updating password!"
             });
         }
     }
@@ -190,9 +200,9 @@ class ModalChangePassword extends React.Component {
                 <Modal.Title>Change Password</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div className="form-group">
+                {/* <div className="form-group">
                     <input type="password" className="form-control" placeholder="Password" onChange={this.handlerPassword}/>
-                </div>
+                </div> */}
                 <div className="form-group">
                     <input type="password" className="form-control" placeholder="New Password" onChange={this.handlerNewPassword}/>
                 </div>
