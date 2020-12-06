@@ -29,7 +29,7 @@ class ResetPassword extends React.Component {
         
         const token = this.state.token;
         const params = {
-            password: this.state.password
+            newPassword: this.state.password
         }
 
         try {
