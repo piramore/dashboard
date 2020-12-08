@@ -34,7 +34,7 @@ class ResetPassword extends React.Component {
 
         try {
             this.setState({ loading: true });
-            const response = await axios.post(`/api/resetpassword/${token}`, params);
+            const response = await axios.post(`http://${SERVICE_HOST}/resetpassword/${token}`, params);
             this.setState({ loading: false });
 
             if (response.data.success) {

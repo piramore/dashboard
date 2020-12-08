@@ -180,7 +180,7 @@ class ModalChangePassword extends React.Component {
         const header = { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
 
         try {
-            let res = await axios.post(`/api/admin/update`, params, { headers: header });
+            let res = await axios.post(`http://${SERVICE_HOST}/admin/update`, params, { headers: header });
             this.setState({ alertSuccess: "Update password success" });
         }
 

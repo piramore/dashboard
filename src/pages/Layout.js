@@ -2,8 +2,8 @@ import React from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
-import ResetPassword from './ResetPassword';
 import User from './User';
+import Admin from './Admin';
 
 function Layout() {
   return (
@@ -22,6 +22,12 @@ function Layout() {
             User
           </div>
         </Link>
+        <Link to="/admin">
+          <div className="item">
+            <i className="fa fa-user mr-3"></i>
+            Admin
+          </div>
+        </Link>
         <Link to="/login">
           <div className="item">
             <i className="fa fa-power-off mr-3"></i>
@@ -33,6 +39,7 @@ function Layout() {
         <div className="container">
           <Switch>
             <Route path="/user" component={User}/>
+            <Route path="/admin" component={Admin}/>
             <Route path="/" component={Home}/>
           </Switch>
         </div>

@@ -25,7 +25,7 @@ class LoginLayout extends React.Component {
   login = async () => {
     const { email, password } = this.state;
     try {
-      let loginRequest = await axios.post(`/api/login`, { email, password }, );
+      let loginRequest = await axios.post(`http://${SERVICE_HOST}/login`, { email, password }, );
 
       if (loginRequest.data.success == "false") throw loginRequest.data.message;
 
@@ -111,7 +111,7 @@ class ModalResetPassword extends React.Component {
 
       try {
         this.setState({ loading: true });
-        const updateReq = await axios.post(`/api/forgotpassword`, params);
+        const updateReq = await axios.post(`http://${SERVICE_HOST}/forgotpassword`, params);
         this.setState({ loading: false });
         if (updateReq.data.success) {
           this.setState({
@@ -149,7 +149,7 @@ class ModalResetPassword extends React.Component {
 
     try {
       this.setState({ loading: true });
-      let response = await axios.post(`/api/resetpassword/${this.state.token}`, params);
+      let response = await axios.post(`http://${SERVICE_HOST}/resetpassword/${this.state.token}`, params);
       this.setState({ loading: false });
       if (response.data.success) {
         this.setState({ alertSuccess: response.data.message, alertError: '' });
