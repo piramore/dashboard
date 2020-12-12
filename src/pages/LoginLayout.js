@@ -3,15 +3,22 @@ import axios from 'axios';
 import { Alert, Modal, Button, Spinner } from 'react-bootstrap';
 
 import { SERVICE_HOST } from '../configs/Host.config';
+import { AppService } from '../services/app.service';
 
 class LoginLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.appService = new AppService();
+  }
+
   state = {
     username: '',
     email: '',
     password: '',
     error: '',
     loginSuccess: false,
-    resetPasswordModal: false
+    resetPasswordModal: false,
+    loginLoading: false
   }
 
   handleEmailChange = (event) => {
@@ -24,22 +31,55 @@ class LoginLayout extends React.Component {
 
   login = async () => {
     const { email, password } = this.state;
-    try {
-      let loginRequest = await axios.post(`http://${SERVICE_HOST}/login`, { email, password }, );
+    
+    this.setState({ loginLoading: true });
+    this.appService.login(email, password).then(
+      response => {
+        this.setState({ loginLoading: false });
 
-      if (loginRequest.data.success == "false") throw loginRequest.data.message;
+        if (!response.data.admin || !response.data.token) {
+          console.log("throwing error");
+          throw(response.data.message);
+        }
 
-      let loggedUser = loginRequest.data.admin;
+        else {
+          let loggedUser = response.data.admin;
+          localStorage.setItem('user', JSON.stringify(loggedUser));
+          localStorage.setItem('token', response.data.token);
+          window.location.href = '/';
+        }
+      }
+    ).catch(err => {
+      this.setState({ loginLoading: false });
 
-      localStorage.setItem("user", JSON.stringify(loggedUser));
-      localStorage.setItem("token", loginRequest.data.token);
-      window.location.href = "/";
-    }
-    catch(err) {
-      if (err.response) this.setState({ error: err.response.data.message });
-      else if (typeof err == 'string') this.setState({ error: err });
-      else this.setState({ error: 'Cannot conenct to server' });
-    }
+      if (typeof err == 'string') {
+        console.error(err);
+        this.setState({ error: err });
+      }
+
+      else {
+        console.error(err);
+        this.setState({ error: "Failed to login" })
+      }
+    })
+
+    // this is old ways
+    // try {
+    //   let loginRequest = await axios.post(`http://${SERVICE_HOST}/login`, { email, password }, );
+
+    //   if (loginRequest.data.success == "false") throw loginRequest.data.message;
+
+    //   let loggedUser = loginRequest.data.admin;
+
+    //   localStorage.setItem("user", JSON.stringify(loggedUser));
+    //   localStorage.setItem("token", loginRequest.data.token);
+    //   window.location.href = "/";
+    // }
+    // catch(err) {
+    //   if (err.response) this.setState({ error: err.response.data.message });
+    //   else if (typeof err == 'string') this.setState({ error: err });
+    //   else this.setState({ error: 'Cannot conenct to server' });
+    // }
   }
 
   openResetPasswordModal = (e) => {
@@ -63,7 +103,12 @@ class LoginLayout extends React.Component {
             <div className="form-group">
               <input className="form-control" type="password" placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}/>
             </div>
-            <button className="btn btn-block btn-primary" type="submit" onClick={() => this.login()}>Login</button>
+            <button className="btn btn-block btn-primary" type="submit" onClick={() => this.login()}>
+              { this.state.loginLoading ? 
+                <Spinner animation='border' as="span" role="status" size="sm" /> : 
+                'Login'
+              }
+            </button>
             <div className="text-right mt-2">
               <a href="#" className="text-primary" onClick={this.openResetPasswordModal}>Forget Password?</a>
             </div>
@@ -85,6 +130,7 @@ class LoginLayout extends React.Component {
 class ModalResetPassword extends React.Component {
   constructor(props) {
       super(props);
+      this.appService = new AppService();
   }
 
   state = {
@@ -104,64 +150,126 @@ class ModalResetPassword extends React.Component {
   handlerRePassword = (e) => this.setState({ reNewPassword: e.target.value });
   handlerToken = (e) => this.setState({ token: e.target.value });
   
-  sentMail = async () => {
-      const params = {
-        email: this.state.email
-      }
+  sentMail = () => {
+      const email = this.state.email;
+      this.appService.forgotPassword(email).then(
+        response => {
+          if (response.data.success) {
+            this.setState({
+              alertSuccess: response.data.message,
+              alertError: ''
+            });
+          }
 
-      try {
-        this.setState({ loading: true });
-        const updateReq = await axios.post(`http://${SERVICE_HOST}/forgotpassword`, params);
-        this.setState({ loading: false });
-        if (updateReq.data.success) {
-          this.setState({
-            alertError: "",
-            alertSuccess: updateReq.data.message,
-            // emailSent: true
-          });
-        } else {
-          this.setState({ alertSuccess: '', alertError: updateReq.data.message });
+          else {
+            throw(response.data.message);
+          }
         }
-      }
+      ).catch(
+        error => {
+          if (typeof error === 'string') {
+            console.error(error);
+            this.setState({
+              alertError: error,
+              alertSuccess: ''
+            });
+          }
 
-      catch(err) {
-        this.setState({ loading: false });
-        let message;
-        if (err.response) message = err.response.data.message;
-        this.setState({
-            alertError: message || "Failed requesting password reset!",
-            alertSuccess: ''
-        });
-        console.log(err);
-      }
+          else {
+            console.error(error);
+            this.setState({
+              alertError: "Failed to request reset password token.",
+              alertSucess: ''
+            });
+          }
+        }
+      );
+
+      // old ways
+      // const params = {
+      //   email: this.state.email
+      // }
+      // 
+      // try {
+      //   this.setState({ loading: true });
+      //   const updateReq = await axios.post(`http://${SERVICE_HOST}/forgotpassword`, params);
+      //   this.setState({ loading: false });
+      //   if (updateReq.data.success) {
+      //     this.setState({
+      //       alertError: "",
+      //       alertSuccess: updateReq.data.message,
+      //       // emailSent: true
+      //     });
+      //   } else {
+      //     this.setState({ alertSuccess: '', alertError: updateReq.data.message });
+      //   }
+      // }
+
+      // catch(err) {
+      //   this.setState({ loading: false });
+      //   let message;
+      //   if (err.response) message = err.response.data.message;
+      //   this.setState({
+      //       alertError: message || "Failed requesting password reset!",
+      //       alertSuccess: ''
+      //   });
+      //   console.log(err);
+      // }
   }
 
-  resetPassword = async () => {
+  resetPassword = () => {
     if (this.state.newPassword !== this.state.reNewPassword) {
       console.log(this.state);
       this.setState({ alertError: 'Password missmatch!', alertSuccess: '' });
       return;
     }
 
-    const params = {
-      newPassword: this.state.newPassword
-    }
+    const token = this.state.token;
+    const newPassword = this.state.newPassword;
+    this.appService.resetPassword(token, newPassword).then(
+      response => {
+        if (response.data.success) {
+          this.setState({ alertSuccess: response.data.message, alertError: '' });
+        }
 
-    try {
-      this.setState({ loading: true });
-      let response = await axios.post(`http://${SERVICE_HOST}/resetpassword/${this.state.token}`, params);
-      this.setState({ loading: false });
-      if (response.data.success) {
-        this.setState({ alertSuccess: response.data.message, alertError: '' });
-      } else {
-        this.setState({ alertError: response.data.message, alertSuccess: '' });
+        else {
+          throw(response.data.message);
+        }
       }
-    } catch(err) {
-      this.setState({ loading: false });
-      let message;
-      if (err.response) message = err.response.data.message;
-      this.setState({ alertError: message || 'Failed update password', alertSuccess: '' });
-    }
+    ).catch(
+      error => {
+        if (typeof error === 'string') {
+          console.error(error);
+          this.setState({ alertError: error, alertSuccess: '' });
+        }
+
+        else {
+          console.error(error);
+          this.setState({ alertError: "Failed to reset password", alertSuccess: '' });
+        }
+      }
+    )
+
+    // old ways
+  //   const params = {
+  //     newPassword: this.state.newPassword
+  //   }
+
+  //   try {
+  //     this.setState({ loading: true });
+  //     let response = await axios.post(`http://${SERVICE_HOST}/resetpassword/${this.state.token}`, params);
+  //     this.setState({ loading: false });
+  //     if (response.data.success) {
+  //       this.setState({ alertSuccess: response.data.message, alertError: '' });
+  //     } else {
+  //       this.setState({ alertError: response.data.message, alertSuccess: '' });
+  //     }
+  //   } catch(err) {
+  //     this.setState({ loading: false });
+  //     let message;
+  //     if (err.response) message = err.response.data.message;
+  //     this.setState({ alertError: message || 'Failed update password', alertSuccess: '' });
+  //   }
   }
 
   render() {
