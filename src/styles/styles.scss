@@ -4,12 +4,75 @@
 $sidebar-width: 250px;
 
 a {
-    color: unset;
-    text-decoration: none;
+    color: unset !important;
+    text-decoration: none !important;
 
     &:hover {
         color: $primary;
     }
+}
+
+.sidebarr {
+    background-color: $light;
+    color: $dark;
+    width: 350px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.1);
+    user-select: none;
+
+    .user-section {
+        padding: 2rem;
+        cursor: pointer;
+
+        .name {
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .role {
+            font-size: 1rem;
+        }
+
+        &:hover {
+            background-color: rgba($dark, .1);
+        }
+    }
+
+    .menu-section {
+        padding: 0rem 1rem;
+        transition: 1s;
+
+        .title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            padding: .5rem 1rem;
+        }
+
+        .item {
+            cursor: pointer;
+            padding: .5rem 1rem;
+            border-radius: .5rem;
+
+            &:hover {
+                background-color: rgba($dark, .1);
+            }
+
+            &.logout {
+                &:hover {
+                    color: $red !important;
+                    background-color: rgba($red, .1);
+                }
+            }
+        }
+    }
+}
+
+.sidebarr-content {
+    margin-right: 350px;
+    padding: 1rem;
 }
 
 .sidebar {
@@ -51,4 +114,31 @@ a {
 .sidebar-content {
     margin-left: $sidebar-width;
     padding: 1rem;
+}
+
+.navtab {
+    border-bottom: solid 3px $light;
+    display: flex;
+    font-size: 1rem;
+
+    .item {
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+
+        &.active {
+            font-weight: bold;
+            border-bottom: solid 3px $dark;;
+        }
+    }
+}
+
+.user-list {
+    .user-list-item {
+        border: solid 1px $gray-300;
+        border-radius: 1rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
 }

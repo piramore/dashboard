@@ -3,14 +3,16 @@ import { Button, Modal, Table } from 'react-bootstrap';
 import axios from 'axios';
 
 import { SERVICE_HOST } from '../configs/Host.config';
+import { AppService } from '../services/app.service';
 
 class Admin extends React.Component {
     constructor(props) {
         super(props);
+        this.appService = new AppService();
     }
 
     state = {
-        userList: [1,2,3,4],
+        userList: [],
         modalAddUser: false,
         addUserMode: 'add',
         editedUser: {},
@@ -35,31 +37,61 @@ class Admin extends React.Component {
         this.setState({ modalAddUser: true })
     }
 
-    async getUser() {
-        const token = localStorage.getItem("token");
-        const headers = { 'Authorization': `Bearer ${token}` }
-
-        try {
-            let response = await axios.get(`http://${SERVICE_HOST}/admin/list`, { headers });
-
-            let userList = [];
-            for (let [id, data] of Object.entries(response.data)) {
-                userList.push({
-                    email: data.email,
-                    name: data.name,
-                    role: data.role ? data.role.map(role => role.name)[0] : '',
-                    createdAt: data.createdAt,
-                    updatedAt: data.updatedAt,
-                    salt: data.salt,
-                });
+    getUser() {
+        this.appService.getAdmin().then(
+            response => {
+                let userList = [];
+                for (let [id, data] of Object.entries(response.data)) {
+                    userList.push({
+                        email: data.email,
+                        name: data.name,
+                        role: data.role ? data.role.map(role => role.name)[0] : '',
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                        salt: data.salt,
+                    });
+                }
+                this.setState({ userList });
             }
-            this.setState({ userList });
-            console.log(this.state.userList);
-        }
+        ).catch(
+            error => {
+                if (typeof error === 'string') {
+                    console.error(error);
+                    this.setState({ errorMessage: error });
+                }
 
-        catch(err) {
-            this.setState({ errorMessage: err });
-        }
+                else {
+                    console.error(error);
+                    this.setState({ errorMessage: "Failed to get admin list" });
+                }
+            }
+        )
+
+        // old ways
+        // const token = localStorage.getItem("token");
+        // const headers = { 'Authorization': `Bearer ${token}` }
+
+        // try {
+        //     let response = await axios.get(`http://${SERVICE_HOST}/admin/list`, { headers });
+
+        //     let userList = [];
+        //     for (let [id, data] of Object.entries(response.data)) {
+        //         userList.push({
+        //             email: data.email,
+        //             name: data.name,
+        //             role: data.role ? data.role.map(role => role.name)[0] : '',
+        //             createdAt: data.createdAt,
+        //             updatedAt: data.updatedAt,
+        //             salt: data.salt,
+        //         });
+        //     }
+        //     this.setState({ userList });
+        //     console.log(this.state.userList);
+        // }
+
+        // catch(err) {
+        //     this.setState({ errorMessage: err });
+        // }
     }
 
     render() {
@@ -114,6 +146,7 @@ class Admin extends React.Component {
 class ModalAddUser extends React.Component {
     constructor(props) {
         super(props);
+        this.appService = new AppService();
     }
 
     state = {
@@ -144,24 +177,42 @@ class ModalAddUser extends React.Component {
             alert("Please fill all field");
         }
 
-        const token = localStorage.getItem("token");
-        const headers = { "Authorization": `Bearer ${token}` };
-        const params = {
-            name: this.state.name,
-            email: this.state.email,
-            password: this.state.password,
-            role: this.state.role
-        }
+        this.appService.createAdmin(
+            this.state.name,
+            this.state.email,
+            this.state.password
+        ).then(
+            response => {
+                if (response.data.success == false) throw(response.data.message);
+                else alert("Adding admin success!");
+            }
+        ).catch(
+            error => {
+                console.error(error);
+                if (typeof error === 'string') alert(error);
+                else alert("Failed adding admin!");
+            }
+        )
 
-        try {
-            let response = await axios.post(`http://${SERVICE_HOST}/admin/create`, params, { headers });
-            alert("Adding user success!");
-        }
+        // old ways
+        // const token = localStorage.getItem("token");
+        // const headers = { "Authorization": `Bearer ${token}` };
+        // const params = {
+        //     name: this.state.name,
+        //     email: this.state.email,
+        //     password: this.state.password,
+        //     role: this.state.role
+        // }
 
-        catch(err) {
-            console.error(err);
-            alert("Failed adding user.");
-        }
+        // try {
+        //     let response = await axios.post(`http://${SERVICE_HOST}/admin/create`, params, { headers });
+        //     alert("Adding user success!");
+        // }
+
+        // catch(err) {
+        //     console.error(err);
+        //     alert("Failed adding user.");
+        // }
     }
 
     render() {

@@ -1,0 +1,311 @@
+import React from 'react';
+import { Spinner, Modal, Button } from 'react-bootstrap';
+import Sidebar from '../components/Sidebar';
+import { AppService } from '../services/app.service';
+import Avatar from '../assets/images/avatar.png';
+
+class Settings extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    state = {
+        activeTabs: 'admin'
+    }
+
+    changeTabs = tabs => this.setState({ activeTabs: tabs });
+
+    render() {
+        return (
+            <div>
+                <div className="navtab">
+                    <div className={'item' + (this.state.activeTabs === 'admin' ? ' active' : '')}
+                        onClick={() => this.changeTabs('admin')}>
+                        All Users
+                    </div>
+                    <div className={'item' + (this.state.activeTabs === 'role' ? ' active' : '')}
+                        onClick={() => this.changeTabs('role')}>
+                        Role
+                    </div>
+                    <div className={'item' + (this.state.activeTabs === 'module' ? ' active' : '')}
+                        onClick={() => this.changeTabs('module')}>
+                        Module
+                    </div>
+                </div>
+                <div className="pt-4">
+                    {
+                        this.state.activeTabs === 'admin' &&
+                        <UserList/>
+                    }
+                </div>
+                <Sidebar/>
+            </div>
+        )
+    }
+}
+
+class UserList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.appService = new AppService();
+    }
+
+    state = {
+        userList: [],
+
+        // add edit user
+        addUserMode: 'add',
+        editedUser: undefined,
+        
+        // modal
+        modalAddUser: false,
+
+        // loading
+        loadingGetUser: false,
+    }
+
+    componentDidMount() {
+        this.getUser();
+    }
+
+    getUser() {
+        this.setState({ loadingGetUser: true });
+        this.appService.getAdmin().then(
+            response => {
+                this.setState({ loadingGetUser: false });
+                let userList = [];
+                for (let [id, data] of Object.entries(response.data)) {
+                    userList.push({
+                        email: data.email,
+                        name: data.name,
+                        role: data.role ? data.role.map(role => role.name)[0] : '',
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                        salt: data.salt,
+                    });
+                }
+                this.setState({ userList });
+            }
+        ).catch(
+            error => {
+                this.setState({ loadingGetUser: false });
+                if (typeof error === 'string') {
+                    console.error(error);
+                    this.setState({ errorMessage: error });
+                }
+
+                else {
+                    console.error(error);
+                    this.setState({ errorMessage: "Failed to get admin list" });
+                }
+            }
+        )
+    }
+
+    openAddUserModal(mode, editedUser) {
+        if (mode !== 'add' && mode !== 'edit') return;
+        this.setState({
+            addUserMode: mode,
+            editedUser: editedUser ? {
+                name: editedUser.name,
+                email: editedUser.email,
+                password: '',
+                role: editedUser.role
+            } : undefined
+        });
+        this.setState({ modalAddUser: true })
+    }
+
+    render() {
+        return (
+            <>
+                <div className="d-flex justify-content-end">
+                    <button className="btn btn-outline-primary" onClick={() => this.openAddUserModal('add')}>
+                        <i className="fa fa-plus mr-2"></i>
+                        Add User
+                    </button>
+                </div>
+                <div className="mt-2 d-flex">
+                    <div className="p-2 font-weight-bold" style={{ width: '50%' }}>User Detail</div>
+                    <div className="p-2 font-weight-bold" style={{ width: '25%' }}>Roles</div>
+                    <div className="p-2 font-weight-bold" style={{ width: '25%' }}>Actions</div>
+                </div>
+                <div className="user-list">
+                    {
+                        this.state.loadingGetUser &&
+                        <div className="d-flex align-items-center justify-content-center" style={{ height: '400px' }}>
+                            <Spinner animation='border' role="status" size="lg" />
+                        </div>
+                    }
+                    {
+                        this.state.userList.map(user => (
+                            <div className="user-list-item">
+                                <div className="d-flex align-items-center" style={{ gap: '20px', width: '50%' }}>
+                                    <img src={Avatar} className="rounded-circle" style={{ height: '60px' }}></img>
+                                    <div>
+                                        <div className="font-weight-bold">{user.name}</div>
+                                        <div>{user.email}</div>
+                                    </div>
+                                </div>
+                                <div style={{ width: '25%' }}>{user.role}</div>
+                                <div className="d-flex" style={{ width: '25%', gap: '20px' }}>
+                                    <div className="text-primary font-weight-bold"
+                                        style={{ cursor: 'pointer' }}>
+                                        <i className="fa fa-pencil-alt mr-1"></i>
+                                        Edit
+                                    </div>
+                                    <div className="text-danger font-weight-bold"
+                                        style={{ cursor: 'pointer' }}>
+                                        <i className="fa fa-trash mr-1"></i>
+                                        Delete
+                                    </div>
+                                    {/* <button className="btn btn-primary">
+                                        <i className="fa fa-pencil-alt mr-2"></i>
+                                        Edit
+                                    </button> */}
+                                    {/* <button className="btn btn-danger">
+                                        <i className="fa fa-trash mr-2"></i>
+                                        Delete
+                                    </button> */}
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+
+                {/* Modal Here */}
+                <Modal show={this.state.modalAddUser} onHide={() => this.setState({ modalAddUser: false })}>
+                    <ModalAddUser
+                        onClose={() => this.setState({ modalAddUser: false })}
+                        mode={this.state.addUserMode}
+                        editedUser={this.state.editedUser}>
+                    </ModalAddUser>
+                </Modal>
+            </>
+        )
+    }
+}
+
+
+class ModalAddUser extends React.Component {
+    constructor(props) {
+        super(props);
+        this.appService = new AppService();
+    }
+
+    state = {
+        mode: this.props.mode,
+        name: '',
+        email: '',
+        password: '',
+        role: 'superAdmin',
+    }
+
+    componentWillMount() {
+        if (this.props.mode === 'edit') {
+            this.setState({ ...this.props.editedUser });
+        }
+
+        else if (this.props.mode === 'add') {
+            this.setState({ name: '', email: '', password: '' });
+        }
+    }
+
+    handleName = e => this.setState({ name: e.target.value });
+    handleEmail = e => this.setState({ email: e.target.value });
+    handlePassword = e => this.setState({ password: e.target.value });
+    handleRole = e => this.setState({ role: e.target.value });
+
+    addUser() {
+        if (!this.state.name || !this.state.email || !this.state.password) {
+            alert("Please fill all field");
+        }
+
+        this.appService.createAdmin(
+            this.state.name,
+            this.state.email,
+            this.state.password
+        ).then(
+            response => {
+                if (response.data.success === false) throw(response.data.message);
+                else {
+                    alert("Adding admin success!");
+                    this.props.onClose();
+                }
+            }
+        ).catch(
+            error => {
+                console.error(error);
+                if (typeof error === 'string') alert(error);
+                else alert("Failed adding admin!");
+            }
+        )
+    }
+
+    render() {
+        return (
+            <>
+                <Modal.Header closeButton>Add User</Modal.Header>
+                <Modal.Body>
+                    <div className="form-group">
+                        <label htmlFor="name">Name</label>
+                        <input
+                            className="form-control"
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Name"
+                            autoComplete="off"
+                            onChange={this.handleName}
+                            value={this.state.name}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            className="form-control"
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Email"
+                            autoComplete="off"
+                            onChange={this.handleEmail}
+                            value={this.state.email}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            className="form-control"
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            onChange={this.handlePassword}
+                            value={this.state.password}
+                        />
+                    </div>
+                    {/* <div className="form-group">
+                        <label htmlFor="role">Role</label>
+                        <select
+                            className="form-control"
+                            name="role"
+                            id="role"
+                            placeholder="Role"
+                            onChange={this.handleRole}
+                            value={this.state.role}>
+                            <option value="superAdmin">Superadmin</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div> */}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="light" onClick={this.props.onClose}>Cancel</Button>
+                    <Button variant="primary" onClick={() => this.addUser()}>Submit</Button>
+                </Modal.Footer>
+            </>
+        )
+    }
+}
+
+export default Settings;

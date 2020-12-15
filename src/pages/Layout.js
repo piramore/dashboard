@@ -4,11 +4,12 @@ import { Link, Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import User from './User';
 import Admin from './Admin';
+import Settings from './Settings';
 
 function Layout() {
   return (
     <>
-      <div className="sidebar">
+      {/* <div className="sidebar">
         <div className="title">Dashboard</div>
         <Link to="/">
           <div className="item">
@@ -34,12 +35,13 @@ function Layout() {
             Logout
           </div>
         </Link>
-      </div>
-      <div className="sidebar-content">
+      </div> */}
+      <div className="sidebarr-content">
         <div className="container">
           <Switch>
             <Route path="/user" component={User}/>
             <Route path="/admin" component={Admin}/>
+            <Route path="/settings" component={Settings}/>
             <Route path="/" component={Home}/>
           </Switch>
         </div>

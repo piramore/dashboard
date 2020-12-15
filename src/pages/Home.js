@@ -1,4 +1,5 @@
 import React from 'react';
+import Sidebar from '../components/Sidebar';
 
 class Home extends React.Component {
   state = {
@@ -21,6 +22,7 @@ class Home extends React.Component {
         <div style={{ fontSize: '3rem', textAlign: 'center', marginTop: '100px' }}>
           Hello, <span style={{ fontWeight: 'bold' }}>{ this.state.currentUser.name }</span>!
         </div>
+        <Sidebar></Sidebar>
       </>
     )
   }
