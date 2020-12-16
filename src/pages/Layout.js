@@ -5,6 +5,7 @@ import Home from './Home';
 import User from './User';
 import Admin from './Admin';
 import Settings from './Settings';
+import ChangePassword from './ChangePassword';
 
 function Layout() {
   return (
@@ -42,6 +43,7 @@ function Layout() {
             <Route path="/user" component={User}/>
             <Route path="/admin" component={Admin}/>
             <Route path="/settings" component={Settings}/>
+            <Route path="/changepassword" component={ChangePassword}/>
             <Route path="/" component={Home}/>
           </Switch>
         </div>

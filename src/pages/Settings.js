@@ -3,6 +3,7 @@ import { Spinner, Modal, Button } from 'react-bootstrap';
 import Sidebar from '../components/Sidebar';
 import { AppService } from '../services/app.service';
 import Avatar from '../assets/images/avatar.png';
+import { Link } from 'react-router-dom';
 
 class Settings extends React.Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class Settings extends React.Component {
                 <div className="pt-4">
                     {
                         this.state.activeTabs === 'admin' &&
-                        <UserList/>
+                        <AllUsers/>
                     }
                 </div>
                 <Sidebar/>
@@ -44,7 +45,7 @@ class Settings extends React.Component {
     }
 }
 
-class UserList extends React.Component {
+class AllUsers extends React.Component {
     constructor(props) {
         super(props);
         this.appService = new AppService();
@@ -119,16 +120,21 @@ class UserList extends React.Component {
     render() {
         return (
             <>
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end align-items-center mb-4" style={{ gap: '20px' }}>
                     <button className="btn btn-outline-primary" onClick={() => this.openAddUserModal('add')}>
                         <i className="fa fa-plus mr-2"></i>
                         Add User
                     </button>
+                    <div>
+                        <Link to='/home'>
+                            <i class="fa fa-times text-danger"></i>
+                        </Link>
+                    </div>
                 </div>
-                <div className="mt-2 d-flex">
-                    <div className="p-2 font-weight-bold" style={{ width: '50%' }}>User Detail</div>
-                    <div className="p-2 font-weight-bold" style={{ width: '25%' }}>Roles</div>
-                    <div className="p-2 font-weight-bold" style={{ width: '25%' }}>Actions</div>
+                <div className="mt-2 px-2 d-flex">
+                    <div className="py-2 font-weight-bold" style={{ width: '50%' }}>User Detail</div>
+                    <div className="py-2 font-weight-bold" style={{ width: 'calc(50% - 200px)' }}>Roles</div>
+                    <div className="py-2 font-weight-bold" style={{ width: '200px' }}>Actions</div>
                 </div>
                 <div className="user-list">
                     {
@@ -147,9 +153,9 @@ class UserList extends React.Component {
                                         <div>{user.email}</div>
                                     </div>
                                 </div>
-                                <div style={{ width: '25%' }}>{user.role}</div>
-                                <div className="d-flex" style={{ width: '25%', gap: '20px' }}>
-                                    <div className="text-primary font-weight-bold"
+                                <div style={{ width: 'calc(50% - 200px)' }}>{user.role}</div>
+                                <div className="d-flex" style={{ width: '200px', gap: '10px' }}>
+                                    {/* <div className="text-primary font-weight-bold"
                                         style={{ cursor: 'pointer' }}>
                                         <i className="fa fa-pencil-alt mr-1"></i>
                                         Edit
@@ -158,15 +164,15 @@ class UserList extends React.Component {
                                         style={{ cursor: 'pointer' }}>
                                         <i className="fa fa-trash mr-1"></i>
                                         Delete
-                                    </div>
-                                    {/* <button className="btn btn-primary">
+                                    </div> */}
+                                    <button className="btn btn-primary">
                                         <i className="fa fa-pencil-alt mr-2"></i>
                                         Edit
-                                    </button> */}
-                                    {/* <button className="btn btn-danger">
+                                    </button>
+                                    <button className="btn btn-danger">
                                         <i className="fa fa-trash mr-2"></i>
                                         Delete
-                                    </button> */}
+                                    </button>
                                 </div>
                             </div>
                         ))

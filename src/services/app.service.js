@@ -24,7 +24,7 @@ export class AppService {
 
     resetPassword(token, newPassword) {
         const params = { newPassword };
-        return axios.post(`${this.hostPrefix}/resetpassword/${token}`);
+        return axios.post(`${this.hostPrefix}/resetpassword/${token}`, params);
     }
 
     // ADMINS STUFF
@@ -36,5 +36,10 @@ export class AppService {
     createAdmin(name, email, password) {
         const params = { name, email, password };
         return axios.post(`${this.hostPrefix}/admin/create`, params, { headers: this.headers });
+    }
+
+    changePassword(password) {
+        const params = { password };
+        return axios.post(`${this.hostPrefix}/admin/update`, params, { headers: this.headers });
     }
 }

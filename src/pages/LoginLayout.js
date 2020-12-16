@@ -94,9 +94,9 @@ class LoginLayout extends React.Component {
   render() {
     return (
       <div className="bg-light" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div className="card" style={{ width: '300px' }}>
+        <div className="card" style={{ width: 400 }}>
           <div className="card-body">
-            <div className="font-weight-bold mb-4" style={{ fontSize: '1.5rem' }}>Login</div>
+            <div className="font-weight-bold mb-4 text-center" style={{ fontSize: '2rem' }}>Login</div>
             <div className="form-group">
               <input className="form-control" type="text" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}/>
             </div>
