@@ -49,10 +49,12 @@ class Sidebar extends React.Component {
                     </div>
                     <div className="pb-2">
                         <div className="title">My Account</div>
-                        <div className="item">
-                            <i className="fa fa-key mr-2"></i>
-                            Change Password
-                        </div>
+                        <Link to="/changepassword">
+                            <div className="item">
+                                <i className="fa fa-key mr-2"></i>
+                                Change Password
+                            </div>
+                        </Link>
                         <Link to="/login">
                             <div className="item logout">
                                 <i className="fa fa-power-off mr-2"></i>
