@@ -51,7 +51,7 @@ class ChangePassword extends React.Component {
     render() {
         return (
             <>
-                <div className="font-weight-bold text-dark border-bottom pb-3" style={{ fontSize: '2rem' }}>
+                <div className="font-weight-bold text-dark mt-3" style={{ fontSize: '2rem' }}>
                     Change Password
                 </div>
                 <div className="d-flex justify-content-center" style={{ gap: 100, marginTop: 50 }}>

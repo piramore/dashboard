@@ -127,7 +127,7 @@ class AllUsers extends React.Component {
                     </button>
                     <div>
                         <Link to='/home'>
-                            <i class="fa fa-times text-danger"></i>
+                            <i className="fa fa-times text-danger"></i>
                         </Link>
                     </div>
                 </div>
@@ -165,7 +165,7 @@ class AllUsers extends React.Component {
                                         <i className="fa fa-trash mr-1"></i>
                                         Delete
                                     </div> */}
-                                    <button className="btn btn-primary">
+                                    <button className="btn btn-primary" onClick={() => this.openAddUserModal('edit', user)}>
                                         <i className="fa fa-pencil-alt mr-2"></i>
                                         Edit
                                     </button>
@@ -251,8 +251,14 @@ class ModalAddUser extends React.Component {
     render() {
         return (
             <>
-                <Modal.Header closeButton>Add User</Modal.Header>
+                <Modal.Header closeButton>
+                    { this.state.mode == 'add' ? 'Add User' : undefined }
+                    { this.state.mode == 'edit' ? 'Edit User' : undefined }
+                </Modal.Header>
                 <Modal.Body>
+                    <div className="d-flex justify-content-center">
+                        <img className="rounded-circle" src={Avatar} style={{ height: 150, margin: "20px 0px" }}/>
+                    </div>
                     <div className="form-group">
                         <label htmlFor="name">Name</label>
                         <input
