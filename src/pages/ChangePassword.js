@@ -2,21 +2,19 @@ import React from 'react';
 import Sidebar from '../components/Sidebar';
 import { AppService } from '../services/app.service';
 import PasswordIllust from '../assets/images/password.svg';
-import { Spinner, Alert } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
+import { Notyf } from 'notyf';
 
 class ChangePassword extends React.Component {
     constructor(props) {
         super(props);
         this.appService = new AppService();
+        this.notyf = new Notyf();
     }
 
     state = {
         password: '',
         passwordRe: '',
-
-        // alerts
-        alertSuccess: '',
-        alertError: '',
 
         // loading
         changePasswordLoading: false,
@@ -33,24 +31,18 @@ class ChangePassword extends React.Component {
         this.setState({ changePasswordLoading: true });
         this.appService.changePassword(this.state.password).then(
             response => {
-                this.setState({
-                    alertSuccess: "Update password success!",
-                    alertError: "",
-                    changePasswordLoading: false
-                });
+                this.notyf("Update password success!");
+                this.setState({ changePasswordLoading: false });
             }
         ).catch(
             error => {
-                console.error(error);
-
                 let message;
                 if (error.response) message = error.response.message;
                 else message = 'Failed updating password.';
-                this.setState({
-                    alertSuccess: '',
-                    alertError: message || 'Failed to change password.',
-                    changePasswordLoading: false
-                })
+
+                console.error(error);
+                this.setState({ changePasswordLoading: false });
+                this.notyf.error(message);
             }
         )
     }
@@ -64,7 +56,7 @@ class ChangePassword extends React.Component {
                 <div className="d-flex justify-content-center" style={{ gap: 100, marginTop: 50 }}>
                     <div>
                         <div className="mb-3">
-                            <label for="password">New Password</label>
+                            <label htmlFor="password">New Password</label>
                             <input
                                 type="password"
                                 className="form-control"
@@ -74,7 +66,7 @@ class ChangePassword extends React.Component {
                             />
                         </div>
                         <div className="mb-3">
-                            <label for="password">Confirm Password</label>
+                            <label htmlFor="password">Confirm Password</label>
                             <input
                                 type="password"
                                 className="form-control"
@@ -97,16 +89,6 @@ class ChangePassword extends React.Component {
                         </div>
                     </div>
                     <img src={PasswordIllust} style={{ width: 400 }}/>
-                </div>
-                <div className="mt-4">
-                    <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })}>
-                        <Alert.Heading>Error!</Alert.Heading>
-                        { this.state.alertError }
-                    </Alert>
-                    <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })}>
-                        <Alert.Heading>Success!</Alert.Heading>x
-                        { this.state.alertSuccess }
-                    </Alert>
                 </div>
                 <Sidebar/>
             </>

@@ -4,11 +4,13 @@ import { Alert, Modal, Button, Spinner } from 'react-bootstrap';
 
 import { SERVICE_HOST } from '../configs/Host.config';
 import { AppService } from '../services/app.service';
+import { Notyf } from 'notyf';
 
 class LoginLayout extends React.Component {
   constructor(props) {
     super(props);
     this.appService = new AppService();
+    this.notyf = new Notyf();
   }
 
   state = {
@@ -51,16 +53,19 @@ class LoginLayout extends React.Component {
       }
     ).catch(err => {
       this.setState({ loginLoading: false });
+      let message;
 
       if (typeof err == 'string') {
         console.error(err);
-        this.setState({ error: err });
+        message = err;
       }
 
       else {
         console.error(err);
-        this.setState({ error: "Failed to login" })
+        message = "Failed to login";
       }
+
+      this.notyf.error(message);
     })
 
     // this is old ways
@@ -97,18 +102,20 @@ class LoginLayout extends React.Component {
         <div className="card" style={{ width: 400 }}>
           <div className="card-body">
             <div className="font-weight-bold mb-4 text-center" style={{ fontSize: '2rem' }}>Login</div>
-            <div className="form-group">
-              <input className="form-control" type="text" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}/>
-            </div>
-            <div className="form-group">
-              <input className="form-control" type="password" placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}/>
-            </div>
-            <button className="btn btn-block btn-primary" type="submit" onClick={() => this.login()}>
-              { this.state.loginLoading ? 
-                <Spinner animation='border' as="span" role="status" size="sm" /> : 
-                'Login'
-              }
-            </button>
+            <form onSubmit={e => e.preventDefault()}>
+              <div className="form-group">
+                <input className="form-control" type="text" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}/>
+              </div>
+              <div className="form-group">
+                <input className="form-control" type="password" placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}/>
+              </div>
+              <button className="btn btn-block btn-primary" type="submit" onClick={() => this.login()}>
+                { this.state.loginLoading ? 
+                  <Spinner animation='border' as="span" role="status" size="sm" /> : 
+                  'Login'
+                }
+              </button>
+            </form>
             <div className="text-right mt-2">
               <a href="#" className="text-primary" onClick={this.openResetPasswordModal}>Forget Password?</a>
             </div>
