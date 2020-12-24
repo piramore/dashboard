@@ -37,7 +37,7 @@ class ChangePassword extends React.Component {
         this.setState({ changePasswordLoading: true });
         this.appService.changePassword(this.state.password).then(
             response => {
-                this.notyf("Update password success!");
+                this.notyf.success("Update password success!");
                 this.setState({ changePasswordLoading: false });
             }
         ).catch(
