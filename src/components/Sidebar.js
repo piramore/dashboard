@@ -22,7 +22,7 @@ class Sidebar extends React.Component {
             <div className="sidebarr">
                 <div className="user-section"
                     onClick={() => this.setState({ menuToggle: !this.state.menuToggle })}>
-                    <div className="d-flex align-items-center" style={{ gap: '20px' }}>
+                    <div className="d-flex align-items-center justify-content-end" style={{ gap: '20px' }}>
                         <div className="text-right">
                             <div className="name">{this.state.currentUser.name}</div>
                             <div className="role">{this.state.currentUser.email}</div>

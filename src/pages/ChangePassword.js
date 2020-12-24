@@ -24,9 +24,15 @@ class ChangePassword extends React.Component {
     handlePasswordRe = e => this.setState({ passwordRe: e.target.value });
 
     changePassword() {
-        if (!this.state.password || !this.state.passwordRe) return;
+        if (!this.state.password || !this.state.passwordRe) {
+            this.notyf.error('Please fill all required field.');
+            return;
+        }
 
-        if (this.state.password !== this.state.passwordRe) return;
+        if (this.state.password !== this.state.passwordRe) {
+            this.notyf.error('Password missmatch.');
+            return;
+        }
 
         this.setState({ changePasswordLoading: true });
         this.appService.changePassword(this.state.password).then(

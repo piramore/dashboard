@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import { AppService } from '../services/app.service';
 import Avatar from '../assets/images/avatar.png';
 import { Link } from 'react-router-dom';
+import { Notyf } from 'notyf';
 
 class Settings extends React.Component {
     constructor(props) {
@@ -183,6 +184,7 @@ class AllUsers extends React.Component {
                 <Modal show={this.state.modalAddUser} onHide={() => this.setState({ modalAddUser: false })}>
                     <ModalAddUser
                         onClose={() => this.setState({ modalAddUser: false })}
+                        onReload={() => this.getUser()}
                         mode={this.state.addUserMode}
                         editedUser={this.state.editedUser}>
                     </ModalAddUser>
@@ -197,6 +199,7 @@ class ModalAddUser extends React.Component {
     constructor(props) {
         super(props);
         this.appService = new AppService();
+        this.notyf = new Notyf();
     }
 
     state = {
@@ -235,15 +238,16 @@ class ModalAddUser extends React.Component {
             response => {
                 if (response.data.success === false) throw(response.data.message);
                 else {
-                    alert("Adding admin success!");
+                    this.notyf.success("Adding admin success!");
+                    this.props.onReload();
                     this.props.onClose();
                 }
             }
         ).catch(
             error => {
                 console.error(error);
-                if (typeof error === 'string') alert(error);
-                else alert("Failed adding admin!");
+                if (typeof error === 'string') this.notyf.error(error);
+                else this.notyf.error("Failed adding admin!");
             }
         )
     }

@@ -1,0 +1,75 @@
+===========================================
+POST /login
+Req : email, password all type string
+Res error : success= boolean, error= number, message= string
+Res success : Token , admin 
+_
+Success = false
+error = 1
+message = "Admin with that email does not exist"
+_
+Success = false
+error = 2
+message = "Email and password do not match"
+============================================
+POST /forgotpassword
+Req : email type string
+Res : success= boolean, error= number, message= string
+_
+Success = true
+error=0
+message= "Email has been sent to {email}"
+_
+Success = false
+error = 1
+message = "User with that email does not exist"
+================================================
+POST /resetpassword/:id
+Req : newPassword type string
+Res : success= boolean, error= number, message= string
+_
+Success = true
+error=0
+message= "Now you can login with your new password"
+_
+Success = false
+error = 1
+message = "Something went wrong. Try later"
+_
+success: false
+error: 2
+message: "Expired link. Try again"
+=================================================
+GET /admin/:id 
+Req: login token and userId from login res
+Res: admin
+=================================================
+GET /admin/list
+Req: Login token
+Res: List Admin
+=================================================
+POST /admin/update
+Req: password type string
+Res error: success= boolean, error= number, message= string
+Res success: admin
+_
+success: "false",
+error: 1,
+message: "Find Admin error"
+_
+success: "false"
+error: 2
+message: 'Password should be min 6 characters long'
+=================================================
+POST /admin/create
+Req: email,password,name type string and role superAdmin
+Res: success= boolean, error= number, message= string
+_
+success: false
+error: 1
+message: 'Email is taken'
+_
+success: true
+error: 0,
+message: 'Create admin success'
+=================================================

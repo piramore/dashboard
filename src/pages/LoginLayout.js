@@ -104,7 +104,14 @@ class LoginLayout extends React.Component {
             <div className="font-weight-bold mb-4 text-center" style={{ fontSize: '2rem' }}>Login</div>
             <form onSubmit={e => e.preventDefault()}>
               <div className="form-group">
-                <input className="form-control" type="text" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange}/>
+                <input
+                  className="form-control"
+                  type="text"
+                  placeholder="Email"
+                  value={this.state.email}
+                  onChange={this.handleEmailChange}
+                  autoFocus={true}
+                />
               </div>
               <div className="form-group">
                 <input className="form-control" type="password" placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}/>
