@@ -4,6 +4,7 @@ import { AppService } from '../services/app.service';
 import PasswordIllust from '../assets/images/password.svg';
 import { Spinner } from 'react-bootstrap';
 import { Notyf } from 'notyf';
+import { Link } from 'react-router-dom';
 
 class ChangePassword extends React.Component {
     constructor(props) {
@@ -13,11 +14,14 @@ class ChangePassword extends React.Component {
     }
 
     state = {
+
+        // params
         password: '',
         passwordRe: '',
 
-        // loading
+        // state
         changePasswordLoading: false,
+        changePasswordSuccess: false,
     }
 
     handlePassword = e => this.setState({ password: e.target.value });
@@ -37,8 +41,10 @@ class ChangePassword extends React.Component {
         this.setState({ changePasswordLoading: true });
         this.appService.changePassword(this.state.password).then(
             response => {
-                this.notyf.success("Update password success!");
-                this.setState({ changePasswordLoading: false });
+                this.setState({
+                    changePasswordLoading: false,
+                    changePasswordSuccess: true
+                });
             }
         ).catch(
             error => {
@@ -56,46 +62,63 @@ class ChangePassword extends React.Component {
     render() {
         return (
             <>
-                <div className="font-weight-bold text-dark mt-3" style={{ fontSize: '2rem' }}>
-                    Change Password
-                </div>
-                <div className="d-flex justify-content-center" style={{ gap: 100, marginTop: 50 }}>
-                    <div>
-                        <div className="mb-3">
-                            <label htmlFor="password">New Password</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                placeholder="New password"
-                                style={{ width: 300 }}
-                                onChange={this.handlePassword}
-                            />
+                {
+                    !this.state.changePasswordSuccess ?
+                    <>
+                        <div className="font-weight-bold text-dark mt-3" style={{ fontSize: '2rem' }}>
+                            Change Password
                         </div>
-                        <div className="mb-3">
-                            <label htmlFor="password">Confirm Password</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                placeholder="Confirm new password"
-                                style={{ width: 300 }}
-                                onChange={this.handlePasswordRe}
-                            />
+                        <div className="d-flex justify-content-center" style={{ gap: 100, marginTop: 50 }}>
+                            <div>
+                                <div className="mb-3">
+                                    <label htmlFor="password">New Password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        placeholder="New password"
+                                        style={{ width: 300 }}
+                                        onChange={this.handlePassword}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="password">Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        placeholder="Confirm new password"
+                                        style={{ width: 300 }}
+                                        onChange={this.handlePasswordRe}
+                                    />
+                                </div>
+                                <div>
+                                    <button
+                                        className="btn btn-primary"
+                                        disabled={this.state.changePasswordLoading}
+                                        onClick={() => this.changePassword()}>
+                                        {
+                                            this.state.changePasswordLoading ?
+                                            <Spinner animation='border' as="span" role="status" size="sm" /> :
+                                            "Submit"
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                            <img src={PasswordIllust} style={{ width: 400 }}/>
                         </div>
-                        <div>
-                            <button
-                                className="btn btn-primary"
-                                disabled={this.state.changePasswordLoading}
-                                onClick={() => this.changePassword()}>
-                                {
-                                    this.state.changePasswordLoading ?
-                                    <Spinner animation='border' as="span" role="status" size="sm" /> :
-                                    "Submit"
-                                }
-                            </button>
+                    </> :
+
+                    // success message
+                    <>
+                        <div className="text-center text-dark" style={{ marginTop: '200px' }}>
+                            <div className="font-weight-bold" style={{ fontSize: '2rem' }}>
+                                Updating password success!
+                            </div>
+                            <div class="text-primary">
+                                <Link to="/home">Back to Home</Link>
+                            </div>
                         </div>
-                    </div>
-                    <img src={PasswordIllust} style={{ width: 400 }}/>
-                </div>
+                    </>
+                }
                 <Sidebar/>
             </>
         )

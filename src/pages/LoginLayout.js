@@ -1,10 +1,7 @@
 import React from 'react';
-import axios from 'axios';
 import { Alert, Modal, Button, Spinner } from 'react-bootstrap';
-
-import { SERVICE_HOST } from '../configs/Host.config';
-import { AppService } from '../services/app.service';
 import { Notyf } from 'notyf';
+import { AppService } from '../services/app.service';
 
 class LoginLayout extends React.Component {
   constructor(props) {
@@ -143,147 +140,88 @@ class LoginLayout extends React.Component {
 
 class ModalResetPassword extends React.Component {
   constructor(props) {
-      super(props);
-      this.appService = new AppService();
+    super(props);
+    this.appService = new AppService();
+    this.notyf = new Notyf();
   }
 
   state = {
-      alertSuccess: '',
-      alertError: '',
-      email: '',
-      token: '',
-      newPassword: '',
-      reNewPassword: '',
-      loading: false,
-      emailSent: false,
-      mailSentMessage: '',
+
+    // alert message
+    alertError: '',
+
+    // params
+    email: '',
+
+    // state
+    loading: false,
+    emailSent: false,
+    mailSentMessage: '',
   }
 
   handleEmail = (e) => this.setState({ email: e.target.value });
-  handlerPassword = (e) => this.setState({ newPassword: e.target.value });
-  handlerRePassword = (e) => this.setState({ reNewPassword: e.target.value });
-  handlerToken = (e) => this.setState({ token: e.target.value });
   
   sentMail = () => {
-      const email = this.state.email;
-      this.appService.forgotPassword(email).then(
-        response => {
-          if (response.data.success) {
-            this.setState({
-              alertSuccess: response.data.message,
-              alertError: ''
-            });
-          }
-
-          else {
-            throw(response.data.message);
-          }
-        }
-      ).catch(
-        error => {
-          if (typeof error === 'string') {
-            console.error(error);
-            this.setState({
-              alertError: error,
-              alertSuccess: ''
-            });
-          }
-
-          else {
-            console.error(error);
-            this.setState({
-              alertError: "Failed to request reset password token.",
-              alertSucess: ''
-            });
-          }
-        }
-      );
-
-      // old ways
-      // const params = {
-      //   email: this.state.email
-      // }
-      // 
-      // try {
-      //   this.setState({ loading: true });
-      //   const updateReq = await axios.post(`http://${SERVICE_HOST}/forgotpassword`, params);
-      //   this.setState({ loading: false });
-      //   if (updateReq.data.success) {
-      //     this.setState({
-      //       alertError: "",
-      //       alertSuccess: updateReq.data.message,
-      //       // emailSent: true
-      //     });
-      //   } else {
-      //     this.setState({ alertSuccess: '', alertError: updateReq.data.message });
-      //   }
-      // }
-
-      // catch(err) {
-      //   this.setState({ loading: false });
-      //   let message;
-      //   if (err.response) message = err.response.data.message;
-      //   this.setState({
-      //       alertError: message || "Failed requesting password reset!",
-      //       alertSuccess: ''
-      //   });
-      //   console.log(err);
-      // }
-  }
-
-  resetPassword = () => {
-    if (this.state.newPassword !== this.state.reNewPassword) {
-      console.log(this.state);
-      this.setState({ alertError: 'Password missmatch!', alertSuccess: '' });
-      return;
-    }
-
-    const token = this.state.token;
-    const newPassword = this.state.newPassword;
-    this.appService.resetPassword(token, newPassword).then(
+    this.setState({ loading: true });
+    this.appService.forgotPassword(this.state.email).then(
       response => {
         if (response.data.success) {
-          this.setState({ alertSuccess: response.data.message, alertError: '' });
+          this.notyf.success(response.data.message);
+          this.props.onClose();
         }
 
-        else {
-          throw(response.data.message);
-        }
+        else throw(response.data.message);
       }
     ).catch(
       error => {
         if (typeof error === 'string') {
           console.error(error);
-          this.setState({ alertError: error, alertSuccess: '' });
+          this.setState({
+            loading: false,
+            alertError: error
+          });
         }
 
         else {
           console.error(error);
-          this.setState({ alertError: "Failed to reset password", alertSuccess: '' });
+          this.setState({
+            loading: false,
+            alertError: "Failed to request reset password token."
+          });
         }
       }
-    )
+    );
 
     // old ways
-  //   const params = {
-  //     newPassword: this.state.newPassword
-  //   }
+    // const params = {
+    //   email: this.state.email
+    // }
+    // 
+    // try {
+    //   this.setState({ loading: true });
+    //   const updateReq = await axios.post(`http://${SERVICE_HOST}/forgotpassword`, params);
+    //   this.setState({ loading: false });
+    //   if (updateReq.data.success) {
+    //     this.setState({
+    //       alertError: "",
+    //       alertSuccess: updateReq.data.message,
+    //       // emailSent: true
+    //     });
+    //   } else {
+    //     this.setState({ alertSuccess: '', alertError: updateReq.data.message });
+    //   }
+    // }
 
-  //   try {
-  //     this.setState({ loading: true });
-  //     let response = await axios.post(`http://${SERVICE_HOST}/resetpassword/${this.state.token}`, params);
-  //     this.setState({ loading: false });
-  //     if (response.data.success) {
-  //       this.setState({ alertSuccess: response.data.message, alertError: '' });
-  //     } else {
-  //       this.setState({ alertError: response.data.message, alertSuccess: '' });
-  //     }
-  //   } catch(err) {
-  //     this.setState({ loading: false });
-  //     let message;
-  //     if (err.response) message = err.response.data.message;
-  //     this.setState({ alertError: message || 'Failed update password', alertSuccess: '' });
-  //   }
+    // catch(err) {
+    //   this.setState({ loading: false });
+    //   let message;
+    //   if (err.response) message = err.response.data.message;
+    //   this.setState({
+    //       alertError: message || "Failed requesting password reset!",
+    //       alertSuccess: ''
+    //   });
+    //   console.log(err);
+    // }
   }
 
   render() {
@@ -293,66 +231,21 @@ class ModalResetPassword extends React.Component {
                   <Modal.Title>Reset Password</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                { !this.state.emailSent ?
-                  <>
-                    <div className="mb-4">
-                      <p>Please input your email to reset your password.</p>
-                      <div className="form-group">
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          name="email"
-                          key="email"
-                          placeholder="example@seblak.moe"
-                          onChange={this.handleEmail}
-                        />
-                      </div>
-                    </div>
-                  </> :
-                  <>
-                    <div className="mb-4">
-                      <p>{ this.state.mailSentMessage }</p>
-                      <div className="form-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="token"
-                          name="token"
-                          key="token"
-                          placeholder="Token"
-                          onChange={this.handlerToken}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <input
-                          type="password"
-                          className="form-control"
-                          id="new_password"
-                          name="new_password"
-                          key="new_password"
-                          placeholder="New Password"
-                          onChange={this.handlerPassword}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <input
-                          type="password"
-                          className="form-control"
-                          id="re_new_password"
-                          name="re_new_password"
-                          key="re_new_password"
-                          placeholder="Confirm New Password"
-                          onChange={this.handlerRePassword}
-                        />
-                      </div>
-                    </div>
-                  </>
-                }
-                <Alert show={this.state.alertSuccess !== ''} variant="success" onClose={() => this.setState({ alertSuccess: '' })}>
-                    <Alert.Heading>Success!</Alert.Heading>
-                    { this.state.alertSuccess }
-                </Alert>
+                <form id="resetPasswordForm" className="mb-4" onSubmit={e => e.preventDefault()}>
+                  <p>Please input your email to reset your password.</p>
+                  <div className="form-group">
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      name="email"
+                      key="email"
+                      placeholder="example@seblak.moe"
+                      autoFocus={true}
+                      onChange={this.handleEmail}
+                    />
+                  </div>
+                </form>
                 <Alert show={this.state.alertError !== ''} variant="danger" onClose={() => this.setState({ alertError: '' })} dismissible>
                     <Alert.Heading>Error!</Alert.Heading>
                     { this.state.alertError }
@@ -360,30 +253,26 @@ class ModalResetPassword extends React.Component {
               </Modal.Body>
               <Modal.Footer style={{ justifyContent: 'space-between' }}>
                 <div>
-                  { false &&
+                  {/* { false &&
                     <span className="text-primary" style={{ cursor: 'pointer' }}
                       onClick={() => this.setState({ emailSent: true })}>
                       Already have token?
                     </span>
-                  }
+                  } */}
                 </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  {
-                      this.state.alertSuccess === '' &&
-                      <>
-                          <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
-                          <Button variant="primary" disabled={this.loading} onClick={() => this.state.emailSent ? this.resetPassword() : this.sentMail()}>
-                            { this.state.loading ? 
-                              <Spinner animation='border' as="span" role="status" size="sm" /> :
-                              <span>Submit</span>
-                            }
-                          </Button>
-                      </>
-                  }
-                  {
-                      this.state.alertSuccess &&
-                      <Button variant="primary" onClick={() => this.props.onClose()}>Close</Button>
-                  }
+                  <Button variant="light" onClick={() => this.props.onClose()}>Cancel</Button>
+                  <Button
+                    form="resetPasswordForm"
+                    type="submit"
+                    variant="primary"
+                    disabled={this.loading}
+                    onClick={() => this.sentMail()}>
+                    { this.state.loading ? 
+                      <Spinner animation='border' as="span" role="status" size="sm" /> :
+                      <span>Submit</span>
+                    }
+                  </Button>
                 </div>
               </Modal.Footer>
           </>
