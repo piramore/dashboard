@@ -14,7 +14,7 @@ class ResetPassword extends React.Component {
         password: '',
         passwordRe: '',
         alertError: '',
-        alertSuccess: 'Success resetting password!',
+        alertSuccess: '',
         loading: false,
         emailSent: false
     }
