@@ -73,3 +73,51 @@ success: true
 error: 0,
 message: 'Create admin success'
 =================================================
+POST /admin/:id/delete
+Req: adminid from admin/list type string and role superAdmin
+Res: success= boolean, error= number, message= string
+_
+success: false
+error: 1
+message: 'Find Admin error'
+_
+success: true
+error: 0,
+message: 'delete success'
+=================================================
+POST /createrole
+Req: name type string, desc type number, module, levelAccess type number
+Res: success= boolean, error= number, message= string
+_
+success: false
+error: 1
+message: 'module not found'
+_
+success: false
+error: 2
+message: 'role error'
+_
+success: true
+error: 0,
+message: '-'
+=================================================
+POST /addrole
+Req: email type string, role type number
+Res: success= boolean, error= number, message= string
+_
+success: false
+error: 1
+message: 'role error'
+_
+success: false
+error: 2
+message: 'admin not found'
+_
+success: true
+error: 0,
+message: 'add role success'
+=================================================
+GET /rolelist
+Req: login only
+Res: role list with module
+=================================================

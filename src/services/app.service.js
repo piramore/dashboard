@@ -42,4 +42,25 @@ export class AppService {
         const params = { password };
         return axios.post(`${this.hostPrefix}/admin/update`, params, { headers: this.headers });
     }
+
+    deleteAdmin(adminid, role) {
+        const params = { adminid, role };
+        return axios.post(`${this.hostPrefix}/admin/${adminid}/delete`, params, { headers: this.headers });
+    }
+
+    // ROLE STUFF
+
+    createRole(name, desc, module, levelAccess) {
+        const params = { name, desc, module, levelAccess };
+        return axios.post(`${this.hostPrefix}/createrole`, params, { headers: this.headers });
+    }
+
+    addRole(email, roleId) {
+        const params = { email, role: roleId };
+        return axios.post(`${this.hostPrefix}/addrole`, params, { headers: this.headers });
+    }
+
+    getRole() {
+        return axios.get(`${this.hostPrefix}/rolelist`, { headers: this.headers });
+    }
 }

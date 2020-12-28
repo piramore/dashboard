@@ -1,55 +1,16 @@
 import React from 'react';
-import { Spinner, Modal, Button } from 'react-bootstrap';
-import Sidebar from '../components/Sidebar';
-import { AppService } from '../services/app.service';
-import Avatar from '../assets/images/avatar.png';
 import { Link } from 'react-router-dom';
 import { Notyf } from 'notyf';
+import { Spinner, Modal, Button } from 'react-bootstrap';
 
-class Settings extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+import { AppService } from '../../services/app.service';
+import Avatar from '../../assets/images/avatar.png';
 
-    state = {
-        activeTabs: 'admin'
-    }
-
-    changeTabs = tabs => this.setState({ activeTabs: tabs });
-
-    render() {
-        return (
-            <div>
-                <div className="navtab">
-                    <div className={'item' + (this.state.activeTabs === 'admin' ? ' active' : '')}
-                        onClick={() => this.changeTabs('admin')}>
-                        All Users
-                    </div>
-                    <div className={'item' + (this.state.activeTabs === 'role' ? ' active' : '')}
-                        onClick={() => this.changeTabs('role')}>
-                        Role
-                    </div>
-                    <div className={'item' + (this.state.activeTabs === 'module' ? ' active' : '')}
-                        onClick={() => this.changeTabs('module')}>
-                        Module
-                    </div>
-                </div>
-                <div className="pt-4">
-                    {
-                        this.state.activeTabs === 'admin' &&
-                        <AllUsers/>
-                    }
-                </div>
-                <Sidebar/>
-            </div>
-        )
-    }
-}
-
-class AllUsers extends React.Component {
+class Users extends React.Component {
     constructor(props) {
         super(props);
         this.appService = new AppService();
+        this.notyf = new Notyf();
     }
 
     state = {
@@ -102,6 +63,27 @@ class AllUsers extends React.Component {
                 }
             }
         )
+    }
+
+    deleteUser(id) {
+        if (!id) return;
+
+        if (window.confirm('Are you sure want to delete this admin?')) {
+            this.appService.deleteAdmin(id, 'superAdmin')
+                .then (response => {
+                    if (response.data.success) {
+                        this.notyf.success('Success deleting admin!');
+                        this.getUser();
+                    }
+                    else {
+                        throw(response.data.message);
+                    }
+                })
+                .catch(err => {
+                    if (typeof err == 'string') this.notyf.error(err);
+                    else this.notyf.error('Failed to delete admin');
+                })
+        }
     }
 
     openAddUserModal(mode, editedUser) {
@@ -170,7 +152,7 @@ class AllUsers extends React.Component {
                                         <i className="fa fa-pencil-alt mr-2"></i>
                                         Edit
                                     </button>
-                                    <button className="btn btn-danger">
+                                    <button className="btn btn-danger" onClick={() => this.deleteUser(user._id)}>
                                         <i className="fa fa-trash mr-2"></i>
                                         Delete
                                     </button>
@@ -324,4 +306,4 @@ class ModalAddUser extends React.Component {
     }
 }
 
-export default Settings;
+export default Users;
