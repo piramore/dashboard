@@ -90,7 +90,7 @@ class Roles extends React.Component {
                             <div className="role-list-item">
                                 <div style={{ width: '40%' }}>
                                     <div className="d-flex align-items-center" style={{ gap: '20px' }}>
-                                        <img src={Shield} class="rounded-circle" style={{ height: 60 }} />
+                                        <img src={Shield} className="rounded-circle" style={{ height: 60 }} />
                                         <div>
                                             <div className="font-weight-bold">{ role.name }</div>
                                             <div>{ role.desc }</div>
@@ -172,6 +172,7 @@ class ModalAddRole extends React.Component {
         ).then(
             response => {
                 this.setState({ loading: false });
+                console.log('create role response => ', response);
             }
         ).catch(
             error => {
@@ -218,7 +219,32 @@ class ModalAddRole extends React.Component {
                             value={this.state.desc}
                         />
                     </div>
-
+                    <div className="form-group">
+                        <label htmlFor="module">Module</label>
+                        <input
+                            className="form-control"
+                            type="text"
+                            id="module"
+                            name="module"
+                            placeholder="Module"
+                            autoComplete="off"
+                            onChange={this.handleModule}
+                            value={this.state.module}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="levelAccess">Level Access</label>
+                        <input
+                            className="form-control"
+                            type="number"
+                            id="levelAccess"
+                            name="levelAccess"
+                            placeholder="Level Access"
+                            autoComplete="off"
+                            onChange={this.handleLevelAccess}
+                            value={this.state.levelAccess}
+                        />
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="light" onClick={this.props.onClose}>Cancel</Button>
