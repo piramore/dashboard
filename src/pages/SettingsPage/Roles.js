@@ -1,6 +1,6 @@
 import React from 'react';
 import { Notyf } from 'notyf';
-import { Spinner, Modal, Button } from 'react-bootstrap';
+import { Spinner, Modal, Button, Table } from 'react-bootstrap';
 
 import { AppService } from '../../services/app.service';
 import Shield from '../../assets/images/role.png';
@@ -87,7 +87,7 @@ class Roles extends React.Component {
 
                         // roles list
                         this.state.rolesData.map(role => (
-                            <div className="role-list-item">
+                            <div className="role-list-item" key={ role.name }>
                                 <div style={{ width: '40%' }}>
                                     <div className="d-flex align-items-center" style={{ gap: '20px' }}>
                                         <img src={Shield} className="rounded-circle" style={{ height: 60 }} />
@@ -100,7 +100,9 @@ class Roles extends React.Component {
                                 <div style={{ width: 'calc(60% - 200px)' }}>
                                     {
                                         role.module.map(module => (
-                                            <div>{ module.name } (Lv. { module.levelAccess })</div>
+                                            <div key={module.name}>
+                                                { module.name } (Lv. { module.levelAccess })
+                                            </div>
                                         ))
                                     }
                                 </div>
@@ -120,7 +122,10 @@ class Roles extends React.Component {
                 </div>
 
                 {/* Modal Here */}
-                <Modal show={this.state.modalCreateRole} onHide={() => this.setState({ modalCreateRole: false })}>
+                <Modal
+                    show={this.state.modalCreateRole}
+                    onHide={() => this.setState({ modalCreateRole: false })}
+                    size="lg">
                     <ModalAddRole
                         onClose={() => this.setState({ modalCreateRole: false })}
                         onReload={() => this.getRoles()}>
@@ -143,17 +148,64 @@ class ModalAddRole extends React.Component {
         // params
         name: '',
         desc: '',
-        module: '',
+        module: {},
         levelAccess: 0,
+
+        // data
+        moduleList: [],
 
         // state
         loading: false,
     }
 
+    componentDidMount() {
+        this.loadModule();
+    }
+
     handleName = e => this.setState({ name: e.target.value });
     handleDesc = e => this.setState({ desc: e.target.value });
-    handleModule = e => this.setState({ module: e.target.value });
     handleLevelAccess = e => this.setState({ levelAccess: e.target.value });
+
+    handleModule = (event, mod, type) => {
+        let currentModule = this.state.module;
+        if (type === "full_access") {
+            if (event.target.checked) {
+                currentModule[mod] = {
+                    full_access: true,
+                    view: true,
+                    create: true,
+                    edit: true,
+                    delete: true
+                }
+            } else {
+                currentModule[mod].full_access = false;
+            }
+        }
+        else {
+            // currentModule[mod][type] = !currentModule[mod][type];
+            currentModule[mod][type] = event.target.checked;
+        }
+
+        this.setState({ module: currentModule });
+    }
+
+    loadModule() {
+        let moduleList = ["users", "roles"];
+
+        let mods = {};
+        for (let mod of moduleList) {
+            mods[mod] = {
+                full_access: false,
+                view: false,
+                create: false,
+                edit: false,
+                delete: false
+            }
+        }
+        this.setState({ moduleList, module: mods });
+
+        setTimeout(() => console.log(this.state), 500);
+    }
 
     createRole() {
 
@@ -181,6 +233,10 @@ class ModalAddRole extends React.Component {
                 else this.notyf.error("Failed creating new roles.");
             }
         )
+    }
+
+    printRole() {
+        console.log(this.state);
     }
 
     render() {
@@ -219,7 +275,7 @@ class ModalAddRole extends React.Component {
                             value={this.state.desc}
                         />
                     </div>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <label htmlFor="module">Module</label>
                         <input
                             className="form-control"
@@ -244,11 +300,88 @@ class ModalAddRole extends React.Component {
                             onChange={this.handleLevelAccess}
                             value={this.state.levelAccess}
                         />
+                    </div> */}
+                    <div className="form-group">
+                        <label htmlFor="module">Module</label>
+                        <Table striped bordered className="text-center">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Full Access</th>
+                                    <th>View</th>
+                                    <th>Create</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    this.state.moduleList.map(mod => (
+                                        <tr key={mod}>
+                                            <td>{mod}</td>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    id="full_access"
+                                                    name="full_access"
+                                                    onChange={($event) => this.handleModule($event, mod, 'full_access')}
+                                                    checked={this.state.module[mod] ? this.state.module[mod].full_access : undefined}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    id="view"
+                                                    name="view"
+                                                    onChange={($event) => this.handleModule($event, mod, 'view')}
+                                                    checked={this.state.module[mod] ? this.state.module[mod].view : undefined}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    id="create"
+                                                    name="create"
+                                                    onChange={($event) => this.handleModule($event, mod, 'create')}
+                                                    checked={this.state.module[mod] ? this.state.module[mod].create : undefined}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    id="edit"
+                                                    name="edit"
+                                                    onChange={($event) => this.handleModule($event, mod, 'edit')}
+                                                    checked={this.state.module[mod] ? this.state.module[mod].edit : undefined}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    id="delete"
+                                                    name="delete"
+                                                    onChange={($event) => this.handleModule($event, mod, 'delete')}
+                                                    checked={this.state.module[mod] ? this.state.module[mod].delete : undefined}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                                <tr>
+                                    <td colSpan={6}>
+                                        <Button variant="primary">
+                                            <i className="fa fa-plus mr-2"></i>
+                                            Add Module
+                                        </Button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </Table>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="light" onClick={this.props.onClose}>Cancel</Button>
-                    <Button variant="primary" onClick={() => this.createRole()}>Submit</Button>
+                    <Button variant="primary" onClick={() => this.printRole()}>Submit</Button>
                 </Modal.Footer>
             </>
         )
