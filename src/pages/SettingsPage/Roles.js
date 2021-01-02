@@ -256,6 +256,7 @@ class ModalAddRole extends React.Component {
                             type="text"
                             id="name"
                             name="name"
+                            key="name"
                             placeholder="Name"
                             autoComplete="off"
                             onChange={this.handleName}
@@ -264,16 +265,17 @@ class ModalAddRole extends React.Component {
                     </div>
                     <div className="form-group">
                         <label htmlFor="desc">Description</label>
-                        <input
+                        <textarea
                             className="form-control"
-                            type="text"
                             id="desc"
                             name="desc"
+                            key="desc"
                             placeholder="Description"
-                            autoComplete="off"
+                            rows={4}
                             onChange={this.handleDesc}
                             value={this.state.desc}
-                        />
+                            style={{ resize: 'none' }}
+                        ></textarea>
                     </div>
                     {/* <div className="form-group">
                         <label htmlFor="module">Module</label>
