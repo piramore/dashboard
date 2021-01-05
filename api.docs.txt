@@ -62,12 +62,16 @@ error: 2
 message: 'Password should be min 6 characters long'
 =================================================
 POST /admin/create
-Req: email,password,name type string and role superAdmin
+Req: email,password,name, role type string and role superAdmin
 Res: success= boolean, error= number, message= string
 _
 success: false
 error: 1
 message: 'Email is taken'
+_
+success: false
+error: 2
+message: 'Role error'
 _
 success: true
 error: 0,

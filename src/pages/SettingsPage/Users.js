@@ -190,9 +190,12 @@ class ModalAddUser extends React.Component {
         email: '',
         password: '',
         role: 'superAdmin',
+        roleList: [],
     }
 
     componentWillMount() {
+        this.getRoles();
+        
         if (this.props.mode === 'edit') {
             this.setState({ ...this.props.editedUser });
         }
@@ -215,7 +218,8 @@ class ModalAddUser extends React.Component {
         this.appService.createAdmin(
             this.state.name,
             this.state.email,
-            this.state.password
+            this.state.password,
+            this.state.role
         ).then(
             response => {
                 if (response.data.success === false) throw(response.data.message);
@@ -230,6 +234,20 @@ class ModalAddUser extends React.Component {
                 console.error(error);
                 if (typeof error === 'string') this.notyf.error(error);
                 else this.notyf.error("Failed adding admin!");
+            }
+        )
+    }
+
+    getRoles() {
+        this.appService.getRole().then(
+            response => {
+                let roles = Object.keys(response.data).map(key => response.data[key].name);
+                this.setState({ roleList: roles, role: roles.length ? roles[0] : '' });
+            }
+        ).catch(
+            error => {
+                this.notyf.error('Failed getting roles data.');
+                this.setState({ roleList: [] });
             }
         )
     }
@@ -283,7 +301,7 @@ class ModalAddUser extends React.Component {
                             value={this.state.password}
                         />
                     </div>
-                    {/* <div className="form-group">
+                    <div className="form-group">
                         <label htmlFor="role">Role</label>
                         <select
                             className="form-control"
@@ -292,14 +310,24 @@ class ModalAddUser extends React.Component {
                             placeholder="Role"
                             onChange={this.handleRole}
                             value={this.state.role}>
-                            <option value="superAdmin">Superadmin</option>
-                            <option value="admin">Admin</option>
+                            {
+                                this.state.roleList.map(role => (
+                                    <option value={role}>{role}</option>
+                                ))
+                            }
                         </select>
-                    </div> */}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="light" onClick={this.props.onClose}>Cancel</Button>
-                    <Button variant="primary" onClick={() => this.addUser()}>Submit</Button>
+                    {
+                        this.state.mode == 'add' &&
+                        <Button variant="primary" onClick={() => this.addUser()}>Submit</Button>
+                    }
+                    {
+                        this.state.mode == 'edit' &&
+                        <Button variant="primary" disabled>Update</Button>
+                    }
                 </Modal.Footer>
             </>
         )

@@ -33,8 +33,8 @@ export class AppService {
         return axios.get(`${this.hostPrefix}/admin/list`, { headers: this.headers });
     }
 
-    createAdmin(name, email, password) {
-        const params = { name, email, password };
+    createAdmin(name, email, password, role) {
+        const params = { name, email, password, role };
         return axios.post(`${this.hostPrefix}/admin/create`, params, { headers: this.headers });
     }
 
