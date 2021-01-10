@@ -177,13 +177,57 @@ class ModalAddRole extends React.Component {
                     edit: true,
                     delete: true
                 }
-            } else {
-                currentModule[mod].full_access = false;
+            }
+
+            else {
+                currentModule[mod] = {
+                    full_access: false,
+                    view: false,
+                    create: false,
+                    edit: false,
+                    delete: false
+                }
             }
         }
-        else {
-            // currentModule[mod][type] = !currentModule[mod][type];
-            currentModule[mod][type] = event.target.checked;
+
+        else if (type === "view") {
+            currentModule[mod] = {
+                full_access: false,
+                view: true,
+                create: false,
+                edit: false,
+                delete: false
+            }
+        }
+
+        else if (type === "create") {
+            currentModule[mod] = {
+                full_access: false,
+                view: true,
+                create: true,
+                edit: false,
+                delete: false
+            }
+        }
+
+        else if (type === "edit") {
+            currentModule[mod] = {
+                full_access: false,
+                view: true,
+                create: true,
+                edit: true,
+                delete: false
+            }
+        }
+
+        else if (type === "delete") {
+            currentModule[mod] = {
+                full_access: true,
+                view: true,
+                create: true,
+                edit: true,
+                delete: true
+            }
         }
 
         this.setState({ module: currentModule });
