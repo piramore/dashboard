@@ -10,6 +10,7 @@ import './styles/styles.scss';
 
 function App() {
   const currentUser = getUser();
+  console.log('currentUser => ', currentUser);
   return (
     <Router>
       <Switch>

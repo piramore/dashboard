@@ -36,6 +36,7 @@ class LoginLayout extends React.Component {
     this.appService.login(email, password).then(
       response => {
         this.setState({ loginLoading: false });
+        console.log("login response", response);
 
         if (!response.data.admin || !response.data.token) {
           console.log("throwing error");

@@ -7,7 +7,7 @@ export function setUser(userData) {
 
 export function getUser() {
   let encrypted = localStorage.getItem("user");
-  if(encrypted) return decrypt(encrypted);
+  if (encrypted) return decrypt(encrypted);
   else return {};
 }
 
@@ -17,7 +17,7 @@ function encrypt(data) {
 }
 
 function decrypt(data) {
-  const predicate = Crypto.Rabbit.decrypt(data, 'secret').toString();
+  const predicate = Crypto.Rabbit.decrypt(data, 'secret').toString(Crypto.enc.Utf8);
   return isJSON(predicate) ? JSON.parse(predicate) : predicate;
 }
 

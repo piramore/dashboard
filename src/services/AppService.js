@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { APP_API } from '../configs/AppConfig';
 
 export class AppService {
     constructor() {
@@ -12,6 +13,7 @@ export class AppService {
     // LOGIN STUFF
 
     login(email, password) {
+        console.log('api =>', APP_API);
         const params = { email, password };
         return axios.post(`${this.hostPrefix}/login`, params);
     }
