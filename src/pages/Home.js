@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
+import { getUser } from '../helpers/Storage';
 
 class Home extends React.Component {
   state = {
@@ -12,7 +13,7 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-    let currentUser = JSON.parse(localStorage.getItem("user"));
+    let currentUser = getUser();
     this.setState({ currentUser });
   }
 

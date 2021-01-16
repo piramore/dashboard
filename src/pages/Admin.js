@@ -1,9 +1,6 @@
 import React from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
-import axios from 'axios';
-
-import { SERVICE_HOST } from '../configs/Host.config';
-import { AppService } from '../services/app.service';
+import { AppService } from '../services/AppService';
 
 class Admin extends React.Component {
     constructor(props) {
@@ -66,32 +63,6 @@ class Admin extends React.Component {
                 }
             }
         )
-
-        // old ways
-        // const token = localStorage.getItem("token");
-        // const headers = { 'Authorization': `Bearer ${token}` }
-
-        // try {
-        //     let response = await axios.get(`http://${SERVICE_HOST}/admin/list`, { headers });
-
-        //     let userList = [];
-        //     for (let [id, data] of Object.entries(response.data)) {
-        //         userList.push({
-        //             email: data.email,
-        //             name: data.name,
-        //             role: data.role ? data.role.map(role => role.name)[0] : '',
-        //             createdAt: data.createdAt,
-        //             updatedAt: data.updatedAt,
-        //             salt: data.salt,
-        //         });
-        //     }
-        //     this.setState({ userList });
-        //     console.log(this.state.userList);
-        // }
-
-        // catch(err) {
-        //     this.setState({ errorMessage: err });
-        // }
     }
 
     render() {
@@ -193,26 +164,6 @@ class ModalAddUser extends React.Component {
                 else alert("Failed adding admin!");
             }
         )
-
-        // old ways
-        // const token = localStorage.getItem("token");
-        // const headers = { "Authorization": `Bearer ${token}` };
-        // const params = {
-        //     name: this.state.name,
-        //     email: this.state.email,
-        //     password: this.state.password,
-        //     role: this.state.role
-        // }
-
-        // try {
-        //     let response = await axios.post(`http://${SERVICE_HOST}/admin/create`, params, { headers });
-        //     alert("Adding user success!");
-        // }
-
-        // catch(err) {
-        //     console.error(err);
-        //     alert("Failed adding user.");
-        // }
     }
 
     render() {

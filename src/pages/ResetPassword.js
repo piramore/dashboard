@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, Button, Spinner } from 'react-bootstrap';
-import { AppService } from '../services/app.service';
+import { AppService } from '../services/AppService';
 import { Notyf } from 'notyf';
 
 class ResetPassword extends React.Component {

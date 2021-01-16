@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 
 import Home from './Home';
-import User from './User';
 import Admin from './Admin';
 import Settings from './SettingsPage/Settings';
 import ChangePassword from './ChangePassword';
@@ -40,7 +39,6 @@ function Layout() {
       <div className="sidebarr-content">
         <div className="container">
           <Switch>
-            <Route path="/user" component={User}/>
             <Route path="/admin" component={Admin}/>
             <Route path="/settings" component={Settings}/>
             <Route path="/changepassword" component={ChangePassword}/>

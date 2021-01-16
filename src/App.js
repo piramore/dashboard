@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import React from 'react';
 
+import { getUser } from './helpers/Storage';
 import LoginLayout from './pages/LoginLayout';
 import ResetPassword from './pages/ResetPassword';
 import Layout from './pages/Layout';
@@ -8,14 +9,15 @@ import Layout from './pages/Layout';
 import './styles/styles.scss';
 
 function App() {
-  const currentUser = localStorage.getItem("user");
+  const currentUser = getUser();
+  console.log('currentUser => ', currentUser);
   return (
     <Router>
       <Switch>
         <Route path="/login" component={LoginLayout}/>
         <Route path="/resetpassword/:token" component={ResetPassword}/>
         <Route path="/">
-          { currentUser ? <Layout/> : <Redirect to="/login"/> }
+          { currentUser.email ? <Layout/> : <Redirect to="/login"/> }
         </Route>
       </Switch>
     </Router>
