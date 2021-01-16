@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Notyf } from 'notyf';
 import { Spinner, Modal, Button } from 'react-bootstrap';
 
-import { AppService } from '../../services/app.service';
+import { AppService } from '../../services/AppService';
 import Avatar from '../../assets/images/avatar.png';
 
 class Users extends React.Component {

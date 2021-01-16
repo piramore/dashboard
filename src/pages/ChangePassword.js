@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
-import { AppService } from '../services/app.service';
+import { AppService } from '../services/AppService';
 import PasswordIllust from '../assets/images/password.svg';
 import { Spinner } from 'react-bootstrap';
 import { Notyf } from 'notyf';

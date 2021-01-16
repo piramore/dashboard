@@ -1,7 +1,8 @@
 import React from 'react';
 import { Alert, Modal, Button, Spinner } from 'react-bootstrap';
 import { Notyf } from 'notyf';
-import { AppService } from '../services/app.service';
+import { AppService } from '../services/AppService';
+import { setUser } from '../helpers/Storage';
 
 class LoginLayout extends React.Component {
   constructor(props) {
@@ -43,7 +44,7 @@ class LoginLayout extends React.Component {
 
         else {
           let loggedUser = response.data.admin;
-          localStorage.setItem('user', JSON.stringify(loggedUser));
+          setUser(loggedUser);
           localStorage.setItem('token', response.data.token);
           window.location.href = '/';
         }
@@ -64,24 +65,6 @@ class LoginLayout extends React.Component {
 
       this.notyf.error(message);
     })
-
-    // this is old ways
-    // try {
-    //   let loginRequest = await axios.post(`http://${SERVICE_HOST}/login`, { email, password }, );
-
-    //   if (loginRequest.data.success == "false") throw loginRequest.data.message;
-
-    //   let loggedUser = loginRequest.data.admin;
-
-    //   localStorage.setItem("user", JSON.stringify(loggedUser));
-    //   localStorage.setItem("token", loginRequest.data.token);
-    //   window.location.href = "/";
-    // }
-    // catch(err) {
-    //   if (err.response) this.setState({ error: err.response.data.message });
-    //   else if (typeof err == 'string') this.setState({ error: err });
-    //   else this.setState({ error: 'Cannot conenct to server' });
-    // }
   }
 
   openResetPasswordModal = (e) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Notyf } from 'notyf';
 import { Spinner, Modal, Button, Table } from 'react-bootstrap';
 
-import { AppService } from '../../services/app.service';
+import { AppService } from '../../services/AppService';
 import Shield from '../../assets/images/role.png';
 
 class Roles extends React.Component {

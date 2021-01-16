@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Avatar from '../assets/images/avatar.png';
+import { getUser } from '../helpers/Storage';
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -13,7 +14,7 @@ class Sidebar extends React.Component {
     }
 
     componentDidMount() {
-        let currentUser = JSON.parse(localStorage.getItem('user'));
+        let currentUser = getUser();
         this.setState({ currentUser });
     }
 

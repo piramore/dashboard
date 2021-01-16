@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { SERVICE_HOST } from '../configs/Host.config';
 
 export class AppService {
     constructor() {
