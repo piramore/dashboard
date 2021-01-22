@@ -4,6 +4,7 @@ import { Link, Switch, Route } from 'react-router-dom';
 import Home from './Home';
 import Admin from './Admin';
 import Settings from './SettingsPage/Settings';
+import MyProfile from './MyProfile';
 import ChangePassword from './ChangePassword';
 
 function Layout() {
@@ -41,6 +42,7 @@ function Layout() {
           <Switch>
             <Route path="/admin" component={Admin}/>
             <Route path="/settings" component={Settings}/>
+            <Route path="/myprofile" component={MyProfile}/>
             <Route path="/changepassword" component={ChangePassword}/>
             <Route path="/" component={Home}/>
           </Switch>

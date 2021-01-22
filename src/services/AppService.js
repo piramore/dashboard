@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { APP_API } from '../configs/AppConfig';
+import { getUser } from '../helpers/Storage';
 
 export class AppService {
     constructor() {
@@ -32,6 +33,11 @@ export class AppService {
 
     getCurrentAdmin() {
         return axios.get(`${this.hostPrefix}/admin`, { headers: this.headers });
+    }
+
+    getCurrentAdminDetail() {
+        let currentUser = getUser();
+        return axios.get(`${this.hostPrefix}/admin/${currentUser._id}`);
     }
 
     // ADMINS STUFF

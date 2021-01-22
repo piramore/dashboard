@@ -50,6 +50,12 @@ class Sidebar extends React.Component {
                     </div>
                     <div className="pb-2">
                         <div className="title">My Account</div>
+                        <Link to="/myprofile">
+                            <div className="item">
+                                <i className="fa fa-user mr-2"></i>
+                                My Profile
+                            </div>
+                        </Link>
                         <Link to="/changepassword">
                             <div className="item">
                                 <i className="fa fa-key mr-2"></i>
