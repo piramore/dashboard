@@ -3,7 +3,7 @@ import { APP_API } from '../configs/AppConfig';
 
 export class AppService {
     constructor() {
-        // this.hostPrefix = `http://${SERVICE_HOST}`;
+        // this.hostPrefix = `http://${APP_API}`;
         this.hostPrefix = `/api`;
 
         const token = localStorage.getItem("token");
@@ -28,6 +28,12 @@ export class AppService {
         return axios.post(`${this.hostPrefix}/resetpassword/${token}`, params);
     }
 
+    // CURRENT ADMIN STUFF
+
+    getCurrentAdmin() {
+        return axios.get(`${this.hostPrefix}/admin`, { headers: this.headers });
+    }
+
     // ADMINS STUFF
 
     getAdmin() {
@@ -37,6 +43,11 @@ export class AppService {
     createAdmin(name, email, password, role) {
         const params = { name, email, password, role };
         return axios.post(`${this.hostPrefix}/admin/create`, params, { headers: this.headers });
+    }
+
+    editAdmin(adminId, name, email) {
+        const params = { name, email };
+        return axios.post(`${this.hostPrefix}/admin/${adminId}/edit`, params, { headers: this.headers });
     }
 
     changePassword(password) {
@@ -59,6 +70,10 @@ export class AppService {
     addRole(email, roleId) {
         const params = { email, role: roleId };
         return axios.post(`${this.hostPrefix}/addrole`, params, { headers: this.headers });
+    }
+
+    deleteRole(roleId) {
+        return axios.post(`${this.hostPrefix}/roledelete/${roleId}`, {});
     }
 
     getRole() {

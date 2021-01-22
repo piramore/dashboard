@@ -427,7 +427,7 @@ class ModalAddRole extends React.Component {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="light" onClick={this.props.onClose}>Cancel</Button>
-                    <Button variant="primary" onClick={() => this.printRole()}>Submit</Button>
+                    <Button variant="primary" onClick={() => this.createRole()}>Submit</Button>
                 </Modal.Footer>
             </>
         )

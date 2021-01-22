@@ -125,3 +125,39 @@ GET /rolelist
 Req: login only
 Res: role list with module
 =================================================
+GET /admin
+Req: login token
+Res: personal info
+=================================================
+GET /admin/:id 
+Req: adminId from login
+Res: admin detail
+=================================================
+POST /roledelete/:id
+Req: email type string, role type number
+Res: success= boolean, error= number, message= string
+_
+success: false
+error: 1
+message: 'Find role error'
+_
+success: false
+error: 2
+message: 'Delete error'
+_
+success: true
+error: 0,
+message: 'Delete success'
+=================================================
+POST /admin/:id/edit
+Req: name, email type string
+Res: success= boolean, error= number, message= string
+_
+success: false
+error: 1
+message: 'Find Admin error'
+_
+success: false
+error: 2
+message: "Minimun 6 characters"
+=================================================
